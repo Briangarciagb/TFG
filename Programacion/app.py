@@ -8,7 +8,7 @@ import os
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
-app.secret_key = "clave_secreta_segura"
+app.secret_key = "clave_secreta_segura"  # Cambia esto en producción
 CORS(app)
 
 SCOPES = [
@@ -21,17 +21,19 @@ def get_credentials():
     creds = None
     if 'credentials' in session:
         creds = Credentials(**session['credentials'])
-    
+    # Verifica si las credenciales existen o son válidas
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             try:
                 creds.refresh(Request())
             except Exception as e:
+                # Si falla el refresh, eliminamos de sesión
                 del session['credentials']
                 return None
         else:
             return None
         
+        # Actualiza en la sesión
         session['credentials'] = {
             'token': creds.token,
             'refresh_token': creds.refresh_token,
@@ -43,6 +45,10 @@ def get_credentials():
     return creds
 
 def get_fitness_data(service, date):
+    """
+    Obtener datos básicos: pasos, calorías y distancia.
+    Puedes añadir más data sources si deseas.
+    """
     start = datetime(date.year, date.month, date.day).timestamp() * 1000000000
     end = (datetime(date.year, date.month, date.day) + timedelta(days=1)).timestamp() * 1000000000
     
@@ -70,10 +76,13 @@ def get_fitness_data(service, date):
         
         # Procesar calorías
         calories_points = calories_data.get('point', [])
-        total_calories = sum(float(point['value'][0]['fpVal']) for point in calories_points if 'fpVal' in point['value'][0])
+        total_calories = sum(
+            float(point['value'][0]['fpVal']) 
+            for point in calories_points if 'fpVal' in point['value'][0]
+        )
         
-        # Calcular distancia (aproximación simple)
-        distance = total_steps * 0.0007  # Aproximación en km
+        # Aproximación de distancia a partir de pasos
+        distance = total_steps * 0.0007  # en km (aprox.)
         
         return {
             "pasos": total_steps,
@@ -85,6 +94,9 @@ def get_fitness_data(service, date):
         return {"pasos": 0, "calorias": 0, "distancia": 0}
 
 def get_sleep_data(service, date):
+    """
+    Obtener datos de sueño para la fecha dada.
+    """
     start = datetime(date.year, date.month, date.day).timestamp() * 1000000000
     end = (datetime(date.year, date.month, date.day) + timedelta(days=1)).timestamp() * 1000000000
 
@@ -101,24 +113,47 @@ def get_sleep_data(service, date):
         
         sleep_points = sleep_data.get('point', [])
         
+        # Filtramos los segmentos de sueño (excluyendo los despierto o fuera de la cama)
         total_sleep_minutes = sum(
             (int(point['endTimeNanos']) - int(point['startTimeNanos'])) / (1000 * 60 * 1000000)
-            for point in sleep_points if point['value'][0]['intVal'] not in [1, 3]  # Excluir "despierto" y "fuera de la cama"
+            for point in sleep_points
+            if point['value'][0]['intVal'] not in [1, 3]  
         )
         
-        return {"sueno": round(total_sleep_minutes / 60, 2)}  # Convertir a horas
+        return {"sueno": round(total_sleep_minutes / 60, 2)}  # En horas
     except Exception as e:
         print(f"Error obteniendo datos de sueño: {e}")
         return {"sueno": 0}
 
+# ------------------ RUTAS FLASK ------------------
 @app.route('/')
-def index():
-    return render_template('index.html')
+def principal():
+    return render_template('Principal.html')
+
+@app.route('/fitness')
+def fitness():
+    """
+    Aquí se muestra la página de Fitness.
+    El JavaScript interno llamará a /datos para traer la info.
+    """
+    return render_template('fitness.html')
+
+@app.route('/alimentacion')
+def alimentacion():
+    return render_template('alimentacion.html')
+
+@app.route('/configuracion')
+def configuracion():
+    """
+    Nueva página con el botón para conectar a Google Fit
+    """
+    return render_template('configuracion.html')
+
 
 @app.route('/autorizar')
 def autorizar():
     flow = InstalledAppFlow.from_client_secrets_file(
-        'credentials.json',
+        'credentials.json',  # Ajusta si tu JSON se llama distinto
         SCOPES
     )
     flow.redirect_uri = url_for('oauth2callback', _external=True)
@@ -131,7 +166,7 @@ def autorizar():
 
 @app.route('/oauth2callback')
 def oauth2callback():
-    state = session['state']
+    state = session.get('state', None)
     flow = InstalledAppFlow.from_client_secrets_file(
         'credentials.json',
         SCOPES,
@@ -152,10 +187,14 @@ def oauth2callback():
         'scopes': credentials.scopes
     }
     
-    return redirect('/')
+    return redirect(url_for('principal'))
 
 @app.route('/datos', methods=['POST'])
 def obtener_datos():
+    """
+    Endpoint para obtener datos de actividad y sueño de Google Fit.
+    Espera un JSON con { "fecha": "YYYY-MM-DD" }
+    """
     creds = get_credentials()
     if not creds:
         return jsonify({
@@ -172,13 +211,7 @@ def obtener_datos():
         fitness_data = get_fitness_data(service, fecha_seleccionada)
         sleep_data = get_sleep_data(service, fecha_seleccionada)
         
-        # Verificación de datos
-        if fitness_data['calorias'] == 0:
-            print(f"Advertencia: Calorías = 0 para la fecha {fecha_seleccionada_str}")
-        
-        if sleep_data['sueno'] == 0:
-            print(f"Advertencia: Sueño = 0 para la fecha {fecha_seleccionada_str}")
-        
+        # Retorna un JSON con todos los datos disponibles
         return jsonify({
             "status": "success",
             "data": {**fitness_data, **sleep_data}
@@ -192,5 +225,6 @@ def obtener_datos():
         })
 
 if __name__ == '__main__':
-    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'  # Solo para desarrollo
+    # Solo para desarrollo (deshabilita verificación HTTPS)
+    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
     app.run(debug=True)

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Conexión API</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+</head>
+<body>
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="toggle-btn" onclick="toggleSidebar()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <ul>
+      <li><a href="{{ url_for('principal') }}">Inicio</a></li>
+      <li><a href="{{ url_for('fitness') }}">Fitness</a></li>
+      <li><a href="{{ url_for('alimentacion') }}">Alimentación</a></li>
+      <li><a href="{{ url_for('botones') }}">Conexión API</a></li>
+    </ul>
+  </div>
+  <!-- FIN SIDEBAR -->
+
+  <div class="main-content">
+    <div class="block">
+      <button class="big-btn" onclick="window.location.href='{{ url_for('autorizar') }}'">
+        Conectar con Google Fit
+      </button>
+      <h2>Bienvenido a Google Fitness</h2>
+      <p>Haz clic en "Conectar" para autorizar el acceso a tus datos de Google Fit.</p>
+    </div>
+  </div>
+</body>
+</html>

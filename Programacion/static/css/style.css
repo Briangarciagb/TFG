@@ -1,98 +1,164 @@
-/* Reset básico */
+/* ---- RESET BÁSICO ---- */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* ---- FUENTE (opcional) ---- */
+/* @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap'); */
+
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f0f4f8;
+    /* font-family: 'Montserrat', sans-serif; */
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #eef2f3, #8e9eab);
     color: #333;
+    min-height: 100vh;
+    position: relative;
 }
 
-.container {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
+/* ---- SIDEBAR ---- */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -250px;
+    width: 250px;
+    height: 100%;
+    background: #24292e;
+    transition: left 0.3s ease;
+    padding-top: 20px;
+    z-index: 999;
+}
+
+.sidebar.active {
+    left: 0;
+}
+
+.toggle-btn {
+    width: 40px;
+    height: 30px;
+    margin: 0 auto;
+    cursor: pointer;
+}
+
+.toggle-btn span {
+    display: block;
+    height: 4px;
+    background: #fff;
+    margin: 4px 0;
+    transition: 0.3s;
+    border-radius: 2px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 50px;
+    text-align: center;
+}
+
+.sidebar ul li {
+    margin: 20px 0;
+}
+
+.sidebar ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 500;
+    display: block;
+    padding: 8px 0;
+    transition: background 0.2s ease;
+}
+
+.sidebar ul li a:hover {
+    background: #444c53;
+    border-radius: 4px;
+}
+
+/* ---- MAIN CONTENT ---- */
+.main-content {
+    margin-left: 0;
+    padding: 40px 20px;
+    transition: margin-left 0.3s ease;
+}
+
+.sidebar.active ~ .main-content {
+    margin-left: 250px;
 }
 
 h1 {
-    text-align: center;
-    margin-bottom: 30px;
-    color: #007BFF;
+    font-size: 2rem;
+    margin-bottom: 20px;
 }
 
-/* Botones */
-.buttons {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 30px;
+p {
+    margin-bottom: 20px;
+    line-height: 1.5;
 }
 
+/* ---- BOTÓN GENÉRICO ---- */
 .btn {
-    padding: 12px 25px;
-    background-color: #007BFF;
-    color: white;
+    background-color: #17a2b8;
+    color: #fff;
+    padding: 12px 20px;
     border: none;
-    border-radius: 10px;
-    font-size: 16px;
+    border-radius: 25px;
+    font-size: 1rem;
     cursor: pointer;
-    transition: all 0.3s ease-in-out;
+    transition: 0.3s;
+    margin-right: 10px;
 }
 
 .btn:hover {
+    background-color: #138496;
+}
+
+/* ---- BOTÓN GRANDE ---- */
+.big-btn {
+    background-color: #007bff;
+    color: #fff;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 30px;
+    font-size: 1.1rem;
+    margin: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.big-btn:hover {
     background-color: #0056b3;
-    transform: scale(1.1);
 }
 
-/* Estado */
-.status {
-    text-align: center;
-    margin-bottom: 20px;
-    font-weight: bold;
+/* ---- BARRA DE CONFIGURACIÓN (PARTE SUPERIOR DERECHA) ---- */
+.config-bar {
+    position: absolute;
+    top: 20px;
+    right: 20px;
 }
 
-/* Calendario */
-.calendar-container {
-    text-align: center;
+.config-bar .config-btn {
+    background-color: #f8c146;
+    color: #222;
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
 }
 
-.calendar-container h2 {
-    margin-bottom: 10px;
+.config-bar .config-btn:hover {
+    background-color: #e6b441;
 }
 
-.calendar {
-    padding: 10px;
-    font-size: 16px;
+/* ---- TABLA DE DATOS (EN FITNESS) ---- */
+.data-table {
+    width: 100%;
+    max-width: 600px;
+    border-collapse: collapse;
+    margin-top: 20px;
 }
 
-/* Tarjetas de datos */
-.datos-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-}
-
-.dato-card {
-    background-color: white;
-    padding: 20px 30px;
-    border-radius: 15px;
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-    text-align: center;
-}
-
-.dato-card h3 {
-    color: #007BFF;
-}
-
-.dato-card p {
-    font-size: 28px;
-}
-
-/* Efectos visuales */
-.dato-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
-}
+.data-table th,
+.data-table td {
+    border: 1px solid #ccc
