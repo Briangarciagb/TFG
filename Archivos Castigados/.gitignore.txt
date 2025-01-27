@@ -1,0 +1,2 @@
+Programacion/credenciales.json
+*.json
