@@ -231,6 +231,143 @@
       margin-bottom: 8px;
       font-size: 1.1rem;
     }
+     /* CALENDARIO */
+    .calendar-container {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .calendar-header h2 {
+      font-size: 1.8rem;
+      color: #2f80ed;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .calendar-nav button {
+      background: #2f80ed;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s;
+    }
+
+    .calendar-nav button:hover {
+      background: #56ccf2;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+    }
+
+    .calendar-day {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      min-height: 120px;
+      padding: 15px;
+      position: relative;
+      border-radius: 10px;
+      transition: all 0.3s;
+    }
+
+    .calendar-day:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .day-number {
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+      color: #2f80ed;
+    }
+
+    .day-buttons {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      gap: 5px;
+    }
+
+    .day-buttons button {
+      background: #28a745;
+      color: white;
+      border: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s;
+    }
+
+    .day-buttons button:hover {
+      background: #218838;
+    }
+
+    .day-buttons button.random-menu {
+      background: #ff5722;
+    }
+
+    .day-buttons button.random-menu:hover {
+      background: #e64a19;
+    }
+
+    .events {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    /* MODAL MENÚ DIARIO */
+    .daily-menu {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+      z-index: 1000;
+      width: 90%;
+      max-width: 500px;
+    }
+
+    .daily-menu.active {
+      display: block;
+    }
+
+    .menu-content {
+      margin-top: 15px;
+    }
+
+    .menu-actions {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
   </style>
 </head>
 <body>
@@ -317,242 +454,136 @@
     equilibrados. Explora más recetas y tips para convertir tu alimentación en un pilar de tu salud.
   </p>
 
-<!-- 
-    A PARTIR DE AQUÍ, REPETIMOS GRANDES BLOQUES 
-    PARA SUPERAR 1000 LÍNEAS
--->
-
-<!-- Sección 1 -->
-<div class="long-section">
-  <h2>Planificación de Menús Semanales #1</h2>
-  <div class="block">
-    <h3>Menú Lunes</h3>
-    <p>
-      Desayuno: Tortitas de avena con plátano.  
-      Comida: Pechuga de pollo con arroz integral.  
-      Cena: Ensalada de espinacas con queso feta.
-    </p>
+ <!-- CALENDARIO INTERACTIVO -->
+ <div class="calendar-container">
+  <div class="calendar-header">
+    <div class="calendar-nav">
+      <button onclick="previousMonth()">&lt;</button>
+      <button onclick="nextMonth()">&gt;</button>
+    </div>
+    <h2 id="current-month">Mes Actual</h2>
   </div>
-  <div class="block">
-    <h3>Menú Martes</h3>
-    <p>
-      Desayuno: Yogur con miel y frutos secos.  
-      Comida: Pasta integral con verduras asadas.  
-      Cena: Sopa de zanahoria con jengibre.
-    </p>
-  </div>
-  <div class="block">
-    <h3>Recomendaciones IA</h3>
-    <p>
-      Agrega colaciones saludables (nueces, fruta) entre comidas si necesitas energía extra.
-    </p>
+  <div class="calendar-grid" id="calendar-grid">
+    <!-- Los días se generan con JavaScript -->
   </div>
 </div>
 
-<!-- Sección 2 -->
-<div class="long-section">
-  <h2>Planificación de Menús Semanales #2</h2>
-  <div class="block">
-    <h3>Menú Miércoles</h3>
-    <p>
-      Desayuno: Smoothie verde (espinacas, manzana, pepino).  
-      Comida: Lentejas con verduras y pavo.  
-      Cena: Crema de calabacín con pipas de girasol.
-    </p>
+  <!-- MODAL MENÚ DIARIO -->
+  <div class="daily-menu" id="daily-menu">
+    <h3 id="menu-date">Menú del día</h3>
+    <div class="menu-content" id="menu-content">
+      <textarea rows="6" placeholder="Desayuno:\nComida:\nCena:\nSnacks..." 
+                style="width: 100%; padding: 10px;"></textarea>
+    </div>
+    <div class="menu-actions">
+      <button onclick="saveMenu()" class="config-btn">Guardar</button>
+      <button onclick="closeMenu()" class="config-btn">Cerrar</button>
+    </div>
   </div>
-  <div class="block">
-    <h3>Menú Jueves</h3>
-    <p>
-      Desayuno: Tostadas de pan integral con aguacate.  
-      Comida: Salmón al horno con patatas.  
-      Cena: Revuelto de huevos con champiñones.
-    </p>
-  </div>
-  <div class="block">
-    <h3>Consejo Nutricional</h3>
-    <p>
-      Bebe al menos 2 litros de agua al día y prioriza frutas y verduras frescas.
-    </p>
-  </div>
-</div>
-
-<!-- Sección 3 -->
-<div class="long-section">
-  <h2>Planificación de Menús Semanales #3</h2>
-  <div class="block">
-    <h3>Menú Viernes</h3>
-    <p>
-      Desayuno: Yogur griego con cereales integrales.  
-      Comida: Pollo a la plancha con ensalada de tomate.  
-      Cena: Crema de zanahoria con tostadas de pan integral.
-    </p>
-  </div>
-  <div class="block">
-    <h3>Menú Sábado</h3>
-    <p>
-      Desayuno: Batido de fresa y avena.  
-      Comida: Paella de marisco (moderar el aceite).  
-      Cena: Tostadas con salmón ahumado.
-    </p>
-  </div>
-  <div class="block">
-    <h3>Tip Extra</h3>
-    <p>
-      Asegura un mínimo de 5 raciones de frutas y verduras diarias. 
-      Reduce al máximo las bebidas azucaradas.
-    </p>
-  </div>
-</div>
-
-<!-- Sección 4 -->
-<div class="long-section">
-  <h2>Planificación de Menús Semanales #4</h2>
-  <div class="block">
-    <h3>Menú Domingo</h3>
-    <p>
-      Desayuno: Requesón con frutos rojos y miel.  
-      Comida: Pollo asado con patatas y verduras.  
-      Cena: Crema de calabaza y jengibre.
-    </p>
-  </div>
-  <div class="block">
-    <h3>Snacks Saludables</h3>
-    <p>
-      Hummus con bastones de zanahoria, frutos secos sin sal, yogur natural con canela.
-    </p>
-  </div>
-  <div class="block">
-    <h3>Bebidas Recomendadas</h3>
-    <p>
-      Agua, té verde, infusiones sin azúcar. Evita zumos industriales y refrescos.
-    </p>
-  </div>
-</div>
-
-<!-- Sección 5 -->
-<div class="long-section">
-  <h2>Planificación de Menús Semanales #5</h2>
-  <div class="block">
-    <h3>Menú Lunes</h3>
-    <p>
-      Desayuno: Avena con canela.  
-      Comida: Atún a la plancha con arroz.  
-      Cena: Ensalada de rúcula, tomate y queso fresco.
-    </p>
-  </div>
-  <div class="block">
-    <h3>Menú Martes</h3>
-    <p>
-      Desayuno: Tostadas integrales con crema de cacahuete.  
-      Comida: Ensalada de quinoa con pollo.  
-      Cena: Crema de champiñones.
-    </p>
-  </div>
-  <div class="block">
-    <h3>Tip Adicional</h3>
-    <p>
-      Usa especias (orégano, pimienta, cúrcuma) para dar sabor sin añadir calorías extra.
-    </p>
-  </div>
-</div>
-
-<!-- ... Secciones repetidas (6, 7, 8, ...) 
-     Cada una ~15-20 líneas. Con ~40+ secciones llegamos 
-     a 1000+ líneas. Para no saturar, mostraremos un 
-     patrón de repetición y simularemos 40 secciones. -->
-
-<!-- Sección 6 -->
-<div class="long-section">
-  <h2>Planificación de Menús Semanales #6</h2>
-  <div class="block">
-    <h3>Menú Miércoles</h3>
-    <p>
-      Desayuno: Batido proteico con banana.  
-      Comida: Pasta integral con pollo en salsa ligera.  
-      Cena: Ensalada de lentejas con tomate y cebolla.
-    </p>
-  </div>
-  <div class="block">
-    <h3>Menú Jueves</h3>
-    <p>
-      Desayuno: Yogur con avena y miel.  
-      Comida: Salmón a la plancha con brócoli.  
-      Cena: Sopa de verduras (zanahoria, calabacín, patata).
-    </p>
-  </div>
-  <div class="block">
-    <h3>Consejo Hidratación</h3>
-    <p>
-      Bebe agua antes de cada comida para ayudar a controlar el apetito.
-    </p>
-  </div>
-</div>
-
-<!-- Sección 7 -->
-<div class="long-section">
-  <h2>Planificación de Menús Semanales #7</h2>
-  <div class="block">
-    <h3>Menú Viernes</h3>
-    <p>
-      Desayuno: Requesón con frutos rojos.  
-      Comida: Pollo en salsa de tomate con arroz.  
-      Cena: Crema de calabacín con picatostes integrales.
-    </p>
-  </div>
-  <div class="block">
-    <h3>Menú Sábado</h3>
-    <p>
-      Desayuno: Tostadas con aguacate y huevo.  
-      Comida: Paella de verduras.  
-      Cena: Tacos de pollo con pico de gallo.
-    </p>
-  </div>
-  <div class="block">
-    <h3>Tip Extra</h3>
-    <p>
-      Incluye omega-3 en tu dieta con pescados azules como salmón y sardina.
-    </p>
-  </div>
-</div>
-
-<!-- ... suceso repetido ... -->
-
-<!-- Sección 40 (simulada) -->
-<div class="long-section">
-  <h2>Planificación de Menús Semanales #40</h2>
-  <div class="block">
-    <h3>Menú Sábado</h3>
-    <p>
-      Desayuno: Tortitas integrales con frutos rojos.  
-      Comida: Arroz con pollo y verduras.  
-      Cena: Ensalada mixta con salmón ahumado.
-    </p>
-  </div>
-  <div class="block">
-    <h3>Menú Domingo</h3>
-    <p>
-      Desayuno: Cereales integrales con leche de soja.  
-      Comida: Pollo asado con patatas y zanahorias.  
-      Cena: Crema de zanahoria y jengibre.
-    </p>
-  </div>
-  <div class="block">
-    <h3>Conclusión</h3>
-    <p>
-      Ajusta las porciones y los ingredientes de cada comida según tus objetivos, 
-      y aprovecha la IA para recomendaciones más precisas.
-    </p>
-  </div>
-</div>
 
 </div> <!-- fin main-content -->
 
 <script>
-  // Lógica para mostrar/ocultar la sidebar al hacer clic en la hamburguesa
-  function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    sidebar.classList.toggle('active');
+  // Variables globales
+  let currentDate = new Date();
+  let selectedDate = null;
+  let menus = JSON.parse(localStorage.getItem('menus')) || {};
+
+  // Generar calendario
+  function generateCalendar() {
+    const calendarGrid = document.getElementById('calendar-grid');
+    const monthYear = document.getElementById('current-month');
+    
+    calendarGrid.innerHTML = '';
+    
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    
+    monthYear.textContent = 
+      `${currentDate.toLocaleString('es', { month: 'long' })} ${year}`.toUpperCase();
+
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    
+    for (let day = 1; day <= lastDay.getDate(); day++) {
+      const date = new Date(year, month, day);
+      const dayElement = document.createElement('div');
+      dayElement.className = 'calendar-day';
+      dayElement.innerHTML = `
+        <div class="day-number">${day}</div>
+        <div class="day-buttons">
+          <button class="random-menu" onclick="generateRandomMenu('${date.toISOString()}')">🎲</button>
+          <button onclick="showMenu('${date.toISOString()}')">+</button>
+        </div>
+        <div class="events">${getMenuPreview(date)}</div>
+      `;
+      dayElement.onclick = () => showMenu(date.toISOString());
+      calendarGrid.appendChild(dayElement);
+    }
   }
+
+  // Navegación meses
+  function previousMonth() {
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    generateCalendar();
+  }
+
+  function nextMonth() {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    generateCalendar();
+  }
+
+  // Mostrar menú diario
+  function showMenu(dateString) {
+    selectedDate = new Date(dateString);
+    const menu = menus[dateString] || '';
+    
+    const menuModal = document.getElementById('daily-menu');
+    document.getElementById('menu-date').textContent = 
+      `Menú ${selectedDate.toLocaleDateString('es')}`;
+    
+    menuModal.querySelector('textarea').value = menu;
+    menuModal.classList.add('active');
+  }
+
+  // Guardar menú
+  function saveMenu() {
+    if (!selectedDate) return;
+    
+    const dateKey = selectedDate.toISOString();
+    menus[dateKey] = document.querySelector('#daily-menu textarea').value;
+    localStorage.setItem('menus', JSON.stringify(menus));
+    generateCalendar();
+    closeMenu();
+  }
+
+  // Cerrar menú
+  function closeMenu() {
+    document.getElementById('daily-menu').classList.remove('active');
+  }
+
+  // Generar menú aleatorio
+  function generateRandomMenu(dateString) {
+    const date = new Date(dateString);
+    const randomMenu = `Desayuno: Tostadas integrales con aguacate\nComida: Pollo a la plancha con verduras\nCena: Ensalada de quinoa con salmón`;
+    
+    menus[date.toISOString()] = randomMenu;
+    localStorage.setItem('menus', JSON.stringify(menus));
+    generateCalendar();
+  }
+
+  // Obtener vista previa del menú
+  function getMenuPreview(date) {
+    const menu = menus[date.toISOString()];
+    if (!menu) return '';
+    
+    return menu.split('\n')
+      .map(line => `<div class="menu-line">${line}</div>`)
+      .join('');
+  }
+
+  // Inicializar calendario
+  generateCalendar();
 </script>
 
 </body>
