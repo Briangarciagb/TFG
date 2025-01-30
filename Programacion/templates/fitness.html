@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Zona Fitness - Proyecto IA</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script>
+  <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+  <style>
+    /* Barra superior con hamburguesa a la izquierda y botón config a la derecha */
+    .top-bar {
+      background-color: #24292e; 
+      color: #fff; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      padding: 10px 20px;
+      position: relative;
+    }
+    .hamburger-menu {
+      cursor: pointer;
+      font-size: 1.4rem;
+    }
+    .hamburger-menu i {
+      color: #fff;
+    }
+    .dropdown-menu {
+      background: #f8f8f8;
+      position: absolute;
+      top: 60px; 
+      left: 20px; 
+      width: 200px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      display: none;
+      flex-direction: column;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      z-index: 999;
+    }
+    .dropdown-menu a {
+      text-decoration: none;
+      color: #333;
+      padding: 10px 15px;
+      border-bottom: 1px solid #ddd;
+    }
+    .dropdown-menu a:hover {
+      background-color: #eee;
+    }
+    .dropdown-menu a:last-child {
+      border-bottom: none;
+    }
+    .config-btn {
+      background-color: #f8c146; 
+      color: #222; 
+      padding: 10px 20px; 
+      border-radius: 20px; 
+      border: none; 
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    /* Contenedor principal */
+    .main-content {
+      padding: 40px 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Banner */
+    .fitness-banner {
+      background: linear-gradient(to right, #56ccf2, #2f80ed);
+      color: #fff;
+      padding: 40px;
+      border-radius: 6px;
+      margin-bottom: 30px;
+    }
+    .fitness-banner h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+    .fitness-banner p {
+      font-size: 1.1rem;
+      line-height: 1.5;
+    }
+
+    /* Sección para selector de fecha */
+    .date-selector {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .date-selector label {
+      font-weight: bold;
+    }
+    .date-selector input[type="date"] {
+      padding: 6px; 
+      border-radius: 4px; 
+      border: 1px solid #ccc;
+    }
+    .date-selector button {
+      background-color: #007bff; 
+      color: #fff; 
+      border: none; 
+      padding: 10px 15px; 
+      border-radius: 6px; 
+      cursor: pointer;
+    }
+    .date-selector button:hover {
+      background-color: #0056b3;
+    }
+
+    /* Sección de estadísticas */
+    .stats-section {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .stats-section h2 {
+      margin-bottom: 20px;
+    }
+    .stats-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+    }
+    .stat-card {
+      border: 1px solid #eee; 
+      border-radius: 6px; 
+      padding: 15px; 
+      text-align: center; 
+      background: #f7f9fa;
+    }
+    .stat-card div {
+      font-size: 2.2rem; 
+      margin-bottom: 5px; 
+      color: #007bff;
+    }
+    .stat-card p {
+      color: #666;
+    }
+
+    /* Gráfica */
+    .chart-section {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .chart-section h2 {
+      margin-bottom: 15px;
+    }
+
+    /* Ejercicios */
+    .exercises-section {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .exercise-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .exercise-card {
+      border: 1px solid #eee;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #f7f9fa;
+    }
+    .exercise-card img {
+      width: 100%; 
+      height: auto;
+    }
+    .exercise-card div {
+      padding: 15px;
+    }
+    .exercise-card h3 {
+      color: #007bff; 
+      margin-bottom: 8px;
+    }
+
+    /* Noticias */
+    .news-section {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .news-item {
+      border: 1px solid #eee;
+      border-radius: 6px;
+      padding: 15px;
+      background: #f7f9fa;
+    }
+    .news-item h3 {
+      color: #007bff; 
+      margin-bottom: 8px;
+    }
+
+    /* Tabla de datos en vivo */
+    .live-data-section {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    .data-table th, .data-table td {
+      border: 1px solid #ddd; 
+      padding: 10px; 
+      text-align: center;
+    }
+    .data-table th {
+      background-color: #007bff;
+      color: #fff;
+    }
+
+    /* Footer */
+    .fitness-footer {
+      background: #24292e; 
+      color: #fff; 
+      text-align: center; 
+      padding: 15px; 
+      border-radius: 6px; 
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <div class="hamburger-menu" onclick="toggleDropdown()">
+      <i class="fas fa-bars"></i>
+    </div>
+    <div class="dropdown-menu" id="dropdownMenu">
+      <a href="{{ url_for('principal') }}">Inicio</a>
+      <a href="{{ url_for('fitness') }}">Fitness</a>
+      <a href="{{ url_for('alimentacion') }}">Alimentación</a>
+      <a href="{{ url_for('configuracion') }}">Configuración</a>
+    </div>
+    <button class="config-btn" onclick="window.location.href='{{ url_for('configuracion') }}'">
+      <i class="fas fa-cog"></i> Configuración
+    </button>
+  </div>
+
+  <div class="main-content">
+    <div class="fitness-banner">
+      <h1>Zona Fitness</h1>
+      <p>Bienvenido a tu panel de Fitness más avanzado. Elige una fecha para ver tus datos de pasos, calorías, distancia y sueño.</p>
+    </div>
+
+    <div class="date-selector">
+      <label for="datePicker"><i class="fas fa-calendar"></i> Selecciona el día:</label>
+      <input type="date" id="datePicker" value="">
+      <button id="loadDataButton">Ver datos</button>
+    </div>
+
+    <div class="stats-section">
+      <h2><i class="fas fa-chart-line"></i> Estadísticas</h2>
+      <div class="stats-cards">
+        <div class="stat-card">
+          <div id="stat-steps">0</div>
+          <p>Pasos</p>
+        </div>
+        <div class="stat-card">
+          <div id="stat-calories">0</div>
+          <p>Calorías (kcal)</p>
+        </div>
+        <div class="stat-card">
+          <div id="stat-distance">0</div>
+          <p>Distancia (km)</p>
+        </div>
+        <div class="stat-card">
+          <div id="stat-sleep">0</div>
+          <p>Sueño (h)</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-section">
+      <h2><i class="fas fa-chart-bar"></i> Gráfica de Progreso</h2>
+      <canvas id="fitnessChart" width="800" height="400"></canvas>
+    </div>
+
+    <div class="exercises-section">
+      <h2><i class="fas fa-dumbbell"></i> Ejercicios Destacados</h2>
+      <div class="exercise-list">
+        <div class="exercise-card">
+          <img src="https://picsum.photos/600/400?random=30" alt="Ejercicio 1">
+          <div>
+            <h3>Sentadillas</h3>
+            <p>Fortalecen glúteos, cuádriceps y espalda baja. Mantén la espalda recta y controla el descenso.</p>
+          </div>
+        </div>
+        <div class="exercise-card">
+          <img src="https://picsum.photos/600/400?random=31" alt="Ejercicio 2">
+          <div>
+            <h3>Flexiones</h3>
+            <p>Ideales para pectorales, hombros y brazos. Ajusta el ancho de manos para variar la dificultad.</p>
+          </div>
+        </div>
+        <div class="exercise-card">
+          <img src="https://picsum.photos/600/400?random=32" alt="Ejercicio 3">
+          <div>
+            <h3>Plancha</h3>
+            <p>Excelente para reforzar el core. Evita que la cadera se hunda y mantén la cabeza alineada con la espalda.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="news-section">
+      <h2><i class="fas fa-newspaper"></i> Noticias y Artículos</h2>
+      <div class="news-grid">
+        <div class="news-item">
+          <h3>Cardio en ayunas</h3>
+          <p>¿Funciona de verdad? Varios expertos explican sus beneficios y desventajas.</p>
+        </div>
+        <div class="news-item">
+          <h3>Entrenamientos HIIT</h3>
+          <p>Rutinas cortas pero intensas, ideales para quienes cuentan con poco tiempo al día.</p>
+        </div>
+        <div class="news-item">
+          <h3>Pilates vs Yoga</h3>
+          <p>Descubre en qué se diferencian y cuál puede ajustarse mejor a tus objetivos.</p>
+        </div>
+        <div class="news-item">
+          <h3>Nutrición deportiva</h3>
+          <p>La importancia de equilibrar tus macros para optimizar el rendimiento.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="live-data-section">
+      <h2><i class="fas fa-sync-alt"></i> Datos en vivo de Google Fit</h2>
+      <table class="data-table" id="fitnessDataTable">
+        <tr><td>Cargando datos...</td></tr>
+      </table>
+    </div>
+
+    <div class="fitness-footer">
+      <p>&copy; 2025 - Proyecto Fitness IA</p>
+    </div>
+  </div>
+
+  <script>
+    const hamburger = document.querySelector(".hamburger-menu");
+    const dropdownMenu = document.getElementById("dropdownMenu");
+    function toggleDropdown() {
+      if (dropdownMenu.style.display === "flex") {
+        dropdownMenu.style.display = "none";
+      } else {
+        dropdownMenu.style.display = "flex";
+        dropdownMenu.style.flexDirection = "column";
+      }
+    }
+
+    const datePicker = document.getElementById("datePicker");
+    const loadDataButton = document.getElementById("loadDataButton");
+    const statSteps = document.getElementById("stat-steps");
+    const statCalories = document.getElementById("stat-calories");
+    const statDistance = document.getElementById("stat-distance");
+    const statSleep = document.getElementById("stat-sleep");
+    const dataTable = document.getElementById("fitnessDataTable");
+    let myChart = null;
+
+    function loadDataForDate(dateStr) {
+      fetch("/datos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fecha: dateStr })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "success") {
+          const { pasos, calorias, distancia, sueno } = data.data;
+          statSteps.textContent = pasos > 0 ? pasos : "No disponible";
+          statCalories.textContent = calorias > 0 ? calorias : "No disponible";
+          statDistance.textContent = distancia > 0 ? distancia.toFixed(2) : "No disponible";
+          statSleep.textContent = sueno > 0 ? sueno.toFixed(2) : "No disponible";
+
+          dataTable.innerHTML = `
+            <tr>
+              <th>Pasos</th>
+              <th>Calorías</th>
+              <th>Distancia (km)</th>
+              <th>Sueño (h)</th>
+            </tr>
+            <tr>
+              <td>${pasos > 0 ? pasos : "N/A"}</td>
+              <td>${calorias > 0 ? calorias : "N/A"}</td>
+              <td>${distancia > 0 ? distancia.toFixed(2) : "N/A"}</td>
+              <td>${sueno > 0 ? sueno.toFixed(2) : "N/A"}</td>
+            </tr>
+          `;
+          updateChart(pasos, calorias, distancia, sueno);
+        } else {
+          statSteps.textContent = "No disponible";
+          statCalories.textContent = "No disponible";
+          statDistance.textContent = "No disponible";
+          statSleep.textContent = "No disponible";
+          dataTable.innerHTML = `<tr><td colspan="4">Error: ${data.message}</td></tr>`;
+          updateChart(0, 0, 0, 0);
+        }
+      })
+      .catch(err => {
+        statSteps.textContent = "No disponible";
+        statCalories.textContent = "No disponible";
+        statDistance.textContent = "No disponible";
+        statSleep.textContent = "No disponible";
+        dataTable.innerHTML = `<tr><td colspan="4">Error al cargar datos</td></tr>`;
+        updateChart(0, 0, 0, 0);
+      });
+    }
+
+    function updateChart(steps, cal, dist, sleep) {
+      const ctx = document.getElementById("fitnessChart").getContext("2d");
+      if (myChart) {
+        myChart.destroy();
+      }
+      myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ["Pasos", "Calorías", "Distancia", "Sueño"],
+          datasets: [{
+            label: "Datos Seleccionados",
+            data: [steps, cal, dist, sleep],
+            backgroundColor: [
+              "rgba(0, 123, 255, 0.7)",
+              "rgba(40, 167, 69, 0.7)",
+              "rgba(111, 66, 193, 0.7)",
+              "rgba(255, 152, 0, 0.7)"
+            ],
+            borderColor: [
+              "rgba(0, 123, 255, 1)",
+              "rgba(40, 167, 69, 1)",
+              "rgba(111, 66, 193, 1)",
+              "rgba(255, 152, 0, 1)"
+            ],
+            borderWidth: 2
+          }]
+        },
+        options: {
+          scales: {
+            y: { beginAtZero: true }
+          },
+          responsive: true
+        }
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      const today = new Date().toISOString().split("T")[0];
+      datePicker.value = today;
+      loadDataForDate(today);
+      loadDataButton.addEventListener("click", function() {
+        const selectedDate = datePicker.value;
+        if (selectedDate) {
+          loadDataForDate(selectedDate);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

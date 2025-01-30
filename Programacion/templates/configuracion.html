@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Configuración - Conexión Google Fit</title>
+  <!-- Si usas la misma hoja de estilo que en Principal o Fitness -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <!-- Íconos de Font Awesome, opcional -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Chart.js (solo si lo usas en todas partes)
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  -->
+  <!-- Si tienes tu script.js con toggleDropdown() u otras funciones -->
+  <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+
+  <style>
+    /* Ajustes básicos para “top-bar”, “dropdown-menu”, “main-content”, 
+       y banners, similares a tu “Principal.html” / “fitness.html”. 
+       Solo ejemplos; adáptalo a tu CSS real. */
+
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #eef2f3, #8e9eab);
+      margin: 0; 
+      padding: 0; 
+      color: #333;
+      min-height: 100vh;
+    }
+    .top-bar {
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      background-color: #24292e; 
+      color: #fff; 
+      padding: 10px 20px;
+      position: relative;
+    }
+    .hamburger-menu {
+      cursor: pointer;
+      font-size: 1.4rem;
+    }
+    .hamburger-menu i { color: #fff; }
+    .dropdown-menu {
+      background: #f8f8f8;
+      position: absolute;
+      top: 60px; 
+      left: 20px; 
+      width: 220px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      display: none;
+      flex-direction: column;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      z-index: 999;
+    }
+    .dropdown-menu a {
+      padding: 12px 15px;
+      border-bottom: 1px solid #ddd;
+      font-weight: 500;
+      color: #333;
+      text-decoration: none;
+    }
+    .dropdown-menu a:hover {
+      background-color: #eee;
+    }
+    .dropdown-menu a:last-child {
+      border-bottom: none;
+    }
+    .config-btn {
+      background-color: #f8c146; 
+      color: #222; 
+      padding: 10px 20px; 
+      border-radius: 20px; 
+      border: none; 
+      cursor: pointer;
+      font-size: 0.95rem;
+      display: flex; 
+      align-items: center; 
+      gap: 6px;
+    }
+    .config-btn i { font-size: 1.2rem; }
+
+    /* Hero banner con gradiente, como en “fitness.html” */
+    .hero-banner {
+      background: linear-gradient(to right, #56ccf2, #2f80ed);
+      color: #fff;
+      padding: 40px;
+      border-radius: 6px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    .hero-banner h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+    .hero-banner p {
+      font-size: 1.1rem;
+      line-height: 1.5;
+    }
+
+    .main-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    .config-section {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    .config-section h2 {
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #007bff;
+    }
+    .config-section p {
+      margin-bottom: 15px;
+      line-height: 1.4;
+    }
+    .config-section .big-btn {
+      background-color: #28a745;
+      color: #fff;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s;
+    }
+    .config-section .big-btn:hover {
+      background-color: #218838;
+    }
+    .api-area {
+      margin-top: 20px;
+      background: #f7f9fa;
+      border: 1px solid #eee;
+      border-radius: 6px;
+      padding: 15px;
+      text-align: center;
+    }
+    .api-area button {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .api-area button:hover {
+      background-color: #0056b3;
+    }
+    .status {
+      margin-top: 10px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOP BAR CON MENÚ HAMBURGUESA -->
+<div class="top-bar">
+  <div class="hamburger-menu" onclick="toggleDropdown()">
+    <i class="fas fa-bars"></i>
+  </div>
+  <div class="dropdown-menu" id="dropdownMenu">
+    <a href="{{ url_for('principal') }}"><i class="fas fa-home"></i> Inicio</a>
+    <a href="{{ url_for('fitness') }}"><i class="fas fa-running"></i> Fitness</a>
+    <a href="{{ url_for('alimentacion') }}"><i class="fas fa-apple-alt"></i> Alimentación</a>
+    <a href="{{ url_for('configuracion') }}"><i class="fas fa-cog"></i> Configuración</a>
+  </div>
+  <!-- Opcional: Botón de config a la derecha, 
+       pero estamos en configuración, tal vez ya no es tan necesario. 
+       Lo dejo comentado, úsalo si quieres: -->
+  <!--
+  <button class="config-btn" onclick="window.location.href='{{ url_for('configuracion') }}'">
+    <i class="fas fa-cog"></i> Configuración
+  </button>
+  -->
+</div>
+
+<!-- HERO BANNER, TIPO “FITNESS” -->
+<div class="hero-banner">
+  <h1>Configuración</h1>
+  <p>Gestiona la conexión con Google Fit y tus ajustes</p>
+</div>
+
+<div class="main-content">
+  
+  <!-- Sección para Conexión a Google Fit -->
+  <div class="config-section">
+    <h2><i class="fas fa-plug"></i> Conexión a Google Fit</h2>
+    <p>
+      Pulsa el siguiente botón para conectar con la API de Google Fit y permitir 
+      a la aplicación acceder a tus datos de fitness y sueño.  
+      Si ya te has conectado antes, podrás recargar tu token o cerrar sesión en cualquier momento.
+    </p>
+    <button class="big-btn" onclick="window.location.href='{{ url_for('autorizar') }}'">
+      <i class="fas fa-link"></i> Conectar con Google Fit
+    </button>
+  </div>
+
+  <!-- Sección para Recargar API -->
+  <div class="config-section">
+    <h2><i class="fas fa-sync-alt"></i> Recargar API</h2>
+    <p>
+      Realiza una llamada de prueba a la API para verificar tu estado de conexión.
+    </p>
+    <div class="api-area">
+      <button id="refreshApiButton">
+        <i class="fas fa-sync"></i> Recargar
+      </button>
+      <p id="statusMessage" class="status">Estado de la API: Cargando...</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Lógica hamburguesa
+  function toggleDropdown() {
+    const dropdownMenu = document.getElementById("dropdownMenu");
+    if (dropdownMenu.style.display === "flex") {
+      dropdownMenu.style.display = "none";
+    } else {
+      dropdownMenu.style.display = "flex";
+      dropdownMenu.style.flexDirection = "column";
+    }
+  }
+
+  // Lógica para el botón "Recargar API"
+  document.addEventListener("DOMContentLoaded", function() {
+    const refreshButton = document.getElementById("refreshApiButton");
+    const statusMessage = document.getElementById("statusMessage");
+    
+    if (refreshButton && statusMessage) {
+      refreshButton.addEventListener("click", function() {
+        statusMessage.textContent = "Llamando a la API...";
+        fetch("/datos", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fecha: new Date().toISOString().split("T")[0] })
+        })
+        .then(resp => resp.json())
+        .then(data => {
+          if (data.status === "success") {
+            statusMessage.textContent = "API recargada con éxito.";
+          } else {
+            statusMessage.textContent = "Error: " + data.message;
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          statusMessage.textContent = "Error en la solicitud.";
+        });
+      });
+    }
+  });
+</script>
+
+</body>
+</html>
