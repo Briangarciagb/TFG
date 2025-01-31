@@ -483,6 +483,63 @@
         }
       });
     });
+
+
+
+    document.addEventListener("DOMContentLoaded", function() {
+    const datePicker = document.getElementById("datePicker");
+    const loadDataButton = document.getElementById("loadDataButton");
+
+    const today = new Date().toISOString().split("T")[0];
+    datePicker.value = today;
+
+    function loadDataForDate(dateStr) {
+      fetch("/datos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fecha: dateStr })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "success") {
+          document.getElementById("stat-steps").textContent = data.data.pasos || "No disponible";
+          document.getElementById("stat-calories").textContent = data.data.calorias || "No disponible";
+          document.getElementById("stat-distance").textContent = data.data.distancia ? data.data.distancia.toFixed(2) : "No disponible";
+          document.getElementById("stat-sleep").textContent = data.data.sueno ? data.data.sueno.toFixed(2) : "No disponible";
+
+          document.getElementById("fitnessDataTable").innerHTML = `
+            <tr>
+              <th>Pasos</th>
+              <th>Calorías</th>
+              <th>Distancia (km)</th>
+              <th>Sueño (h)</th>
+            </tr>
+            <tr>
+              <td>${data.data.pasos || "N/A"}</td>
+              <td>${data.data.calorias || "N/A"}</td>
+              <td>${data.data.distancia ? data.data.distancia.toFixed(2) : "N/A"}</td>
+              <td>${data.data.sueno ? data.data.sueno.toFixed(2) : "N/A"}</td>
+            </tr>
+          `;
+          updateChart(data.data.pasos, data.data.calorias, data.data.distancia, data.data.sueno);
+        } else {
+          alert("Error: " + data.message);
+        }
+      })
+      .catch(() => {
+        alert("Error al cargar datos.");
+      });
+    }
+
+    loadDataButton.addEventListener("click", function() {
+      const selectedDate = datePicker.value;
+      if (selectedDate) {
+        loadDataForDate(selectedDate);
+      }
+    });
+
+    loadDataForDate(today);
+  });
   </script>
 </body>
 </html>
