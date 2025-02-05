@@ -2,431 +2,250 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Inicio - Fitness y Nutrición IA</title>
-
-  <!-- Íconos -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-  <!-- Chart.js (si luego quieres usar gráficas) -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script>
-
-  <!-- 
-    Aquí podrías enlazar tu style.css y script.js:
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
-  -->
-
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #eef2f3, #8e9eab);
-      min-height: 100vh;
-      position: relative;
-      color: #333;
-    }
-    a { text-decoration: none; color: inherit; }
-
-    /* Barra superior */
-    .top-bar {
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center;
-      background-color: #24292e; 
-      color: #fff; 
-      padding: 10px 20px;
-      position: relative;
-    }
-    .hamburger-menu {
-      cursor: pointer;
-      font-size: 1.4rem;
-    }
-    .hamburger-menu i {
-      color: #fff;
-    }
-    .dropdown-menu {
-      background: #f8f8f8;
-      position: absolute;
-      top: 60px; 
-      left: 20px; 
-      width: 220px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      display: none;
-      flex-direction: column;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      z-index: 999;
-    }
-    .dropdown-menu a {
-      padding: 12px 15px;
-      border-bottom: 1px solid #ddd;
-      font-weight: 500;
-      color: #333;
-    }
-    .dropdown-menu a:hover {
-      background-color: #eee;
-    }
-    .dropdown-menu a:last-child {
-      border-bottom: none;
-    }
-    .config-btn {
-      background-color: #f8c146; 
-      color: #222; 
-      padding: 10px 20px; 
-      border-radius: 20px; 
-      border: none; 
-      cursor: pointer;
-      font-size: 0.95rem;
-      display: flex; 
-      align-items: center; 
-      gap: 6px;
-    }
-    .config-btn i { font-size: 1.2rem; }
-
-    /* Contenedor principal */
-    .main-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 40px 20px;
-    }
-
-    /* Carrusel de Noticias */
-    .carousel-container {
-      position: relative;
-      overflow: hidden;
-      border-radius: 8px;
-      margin-bottom: 30px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-    }
-    .carousel-slide {
-      display: flex;
-      width: 100%;
-      transition: transform 0.5s ease-in-out;
-    }
-    .carousel-item {
-      min-width: 100%;
-      height: 300px;
-      position: relative;
-      color: #fff;
-    }
-    .carousel-item img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-    .carousel-caption {
-      position: absolute;
-      bottom: 20px; 
-      left: 20px;
-      background: rgba(0,0,0,0.5);
-      padding: 10px 15px;
-      border-radius: 6px;
-    }
-    .carousel-caption h3 {
-      margin-bottom: 5px;
-      font-size: 1.4rem;
-    }
-    .carousel-caption p {
-      font-size: 0.9rem;
-    }
-    .carousel-btn {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(255,255,255,0.6);
-      border: none;
-      font-size: 1.2rem;
-      cursor: pointer;
-      padding: 8px 12px;
-      border-radius: 4px;
-      color: #333;
-    }
-    .carousel-btn:hover {
-      background: rgba(255,255,255,0.9);
-    }
-    .carousel-btn.left {
-      left: 10px;
-    }
-    .carousel-btn.right {
-      right: 10px;
-    }
-
-    /* Secciones de botones */
-    .sections-buttons {
-      margin-bottom: 30px;
-    }
-    .sections-buttons h2 {
-      font-size: 1.8rem; 
-      margin-bottom: 20px;
-    }
-    .big-btn {
-      background-color: #007bff;
-      color: #fff;
-      padding: 15px 30px;
-      border: none;
-      border-radius: 30px;
-      font-size: 1.1rem;
-      margin: 10px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    .big-btn:hover {
-      background-color: #0056b3;
-    }
-
-    /* Chat flotante */
-    .chat-float-btn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #007bff;
-      color: #fff;
-      border: none;
-      border-radius: 50%;
-      width: 60px;
-      height: 60px;
-      font-size: 1.4rem;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-    }
-    .chat-window {
-      position: fixed;
-      bottom: 90px;
-      right: 20px;
-      width: 300px;
-      max-height: 400px;
-      background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      display: none;
-      flex-direction: column;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      z-index: 9999;
-    }
-    .chat-header {
-      background: #007bff;
-      color: #fff;
-      padding: 10px;
-      border-radius: 8px 8px 0 0;
-    }
-    .chat-body {
-      flex: 1;
-      padding: 10px;
-      overflow-y: auto;
-    }
-    .chat-body .message {
-      margin-bottom: 10px;
-    }
-    .chat-body .message.user { text-align: right; }
-    .chat-footer {
-      display: flex;
-      gap: 5px;
-      padding: 10px;
-      border-top: 1px solid #ccc;
-    }
-    .chat-footer input {
-      flex: 1; 
-      padding: 6px; 
-      border-radius: 4px; 
-      border: 1px solid #ccc;
-    }
-    .chat-footer button {
-      background-color: #007bff; 
-      color: #fff; 
-      border: none; 
-      padding: 8px 12px; 
-      border-radius: 6px; 
-      cursor: pointer;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VitalGym</title>
+  <link rel="stylesheet" href="../static/css/pagina.css">
 </head>
 <body>
+    
+  <header>
+   
+<h1>VytalGym</h1>
+    <div class="logo">
 
-<!-- Barra superior con menú hamburguesa y botón config -->
-<div class="top-bar">
-  <div class="hamburger-menu" onclick="toggleDropdown()">
-    <i class="fas fa-bars"></i>
-  </div>
-  <div class="dropdown-menu" id="dropdownMenu">
-    <a href="{{ url_for('principal') }}"><i class="fas fa-home"></i> Inicio</a>
-    <a href="{{ url_for('fitness') }}"><i class="fas fa-running"></i> Fitness</a>
-    <a href="{{ url_for('alimentacion') }}"><i class="fas fa-apple-alt"></i> Alimentación</a>
-    <a href="{{ url_for('configuracion') }}"><i class="fas fa-cog"></i> Configuración</a>
-  </div>
-  <button class="config-btn" onclick="window.location.href='{{ url_for('configuracion') }}'">
-    <i class="fas fa-cog"></i> Configuración
-  </button>
-</div>
+    </div>
+    <nav>
+   
+      <a href="{{ url_for('pagina') }}">Actividad</a>
+      <a href="{{ url_for('fitness') }}">Fitness</a>
+      <a href="{{ url_for('precios') }}">Servicios</a>
+      <a href="{{ url_for('alimentacion') }}">Alimentación</a>
+      <a href="{{ url_for('contacto') }}">Contacto</a>
+    </nav>
+    <div class="actions">
+      <button onclick="location.href='/login?mode=login';">Iniciar sesión</button>
+      <button onclick="location.href='/login?mode=register';">Registrarse</button>
+    </div>
+    
+  </header>
 
-<!-- Contenido principal -->
-<div class="main-content">
+  <section class="hero">
+    <div class="content">
+      <h1>Bienvenido a nuestra página</h1>
+      <p>Metabolic Exercise and Nutrition</p>
+      <button>Ver Actividad</button>
+    </div>
+    
+    <div class="background-fade">
+      <!-- Imágenes del slider -->
+      <div class="fade-image" style="background-image: url('../static/imagenes/ejercicio.jpg.jpg');"></div>
+      <div class="fade-image" style="background-image: url('../static/imagenes/Imagen de WhatsApp 2025-02-04 a las 09.55.57_32cb9fda.jpg');"></div>
+      <div class="fade-image" style="background-image: url('../static/imagenes/Imagen de WhatsApp 2025-02-04 a las 10.23.34_11c9de6b.jpg');"></div>
+      <div class="fade-image" style="background-image: url('../static/imagenes/organic-dessert-wooden-table-healthy-lifestyle-generated-by-ai.jpg');"></div>
+    </div>
+    
+    <!-- Flechas para controlar el slider -->
+    <div class="slider-arrows">
+      <span class="prev">&#10094;</span>
+      <span class="next">&#10095;</span>
+    </div>
+  </section>
 
-  <!-- CARRUSEL DE NOTICIAS DESTACADAS -->
-  <div class="carousel-container">
-    <div class="carousel-slide" id="carouselSlide">
-      <!-- Ejemplo: 3 “slides” -->
-      <div class="carousel-item">
-        <img src="https://picsum.photos/1200/300?random=200" alt="Slide 1">
-        <div class="carousel-caption">
-          <h3>Nuevos Avances en Nutrición</h3>
-          <p>Descubre las últimas tendencias para mejorar tu dieta.</p>
-        </div>
+  <!-- Otras secciones de la página -->
+  <section class="social">
+    <h2>Síguenos en las redes sociales</h2>
+    <div class="grid">
+      <div class="card">
+        <img src="img11.png" alt="Red social 1">
+        <button onclick="window.open('https://www.facebook.com', '_blank')">Facebook</button>
       </div>
-      <div class="carousel-item">
-        <img src="https://picsum.photos/1200/300?random=201" alt="Slide 2">
-        <div class="carousel-caption">
-          <h3>Rutinas de Ejercicio Innovadoras</h3>
-          <p>Ejercicios efectivos para ahorrar tiempo y potenciar resultados.</p>
-        </div>
+      <div class="card">
+        <img src="img12.png" alt="Red social 2">
+        <button onclick="window.open('https://www.twitter.com', '_blank')">Twitter</button>
       </div>
-      <div class="carousel-item">
-        <img src="https://picsum.photos/1200/300?random=202" alt="Slide 3">
-        <div class="carousel-caption">
-          <h3>Gamificación al Máximo</h3>
-          <p>Compite con tus amigos y alcanza nuevas metas.</p>
-        </div>
+      <div class="card">
+        <img src="img13.png" alt="Red social 3">
+        <button onclick="window.open('https://www.instagram.com', '_blank')">Instagram</button>
       </div>
     </div>
-    <button class="carousel-btn left" id="carouselPrev"><i class="fas fa-chevron-left"></i></button>
-    <button class="carousel-btn right" id="carouselNext"><i class="fas fa-chevron-right"></i></button>
-  </div>
+  </section>
+  
+  <section class="features">
+    <h2>Productos destacados</h2>
+    <div class="grid">
+      <div class="card">
+        <img src="img1.png" alt="Producto 1">
+        <h3>Nombre del producto</h3>
+        <p>25 €</p>
+      </div>
+      <div class="card">
+        <img src="img2.png" alt="Producto 2">
+        <h3>Nombre del producto</h3>
+        <p>25 €</p>
+      </div>
+      <div class="card">
+        <img src="img3.png" alt="Producto 3">
+        <h3>Nombre del producto</h3>
+        <p>25 €</p>
+      </div>
+    </div>
+    <button>Ver todo</button>
+  </section>
+  
+  <section class="services">
+    <h2>Nuestros servicios</h2>
+    <div class="grid">
+      <div class="card">
+        <img src="img4.png" alt="Servicio básico">
+        <h3>Servicio básico</h3>
+        <p>99 €</p>
+        <p>Detalles del servicio básico.</p>
+      </div>
+      <div class="card">
+        <img src="img5.png" alt="Servicio intermedio">
+        <h3>Servicio intermedio</h3>
+        <p>149 €</p>
+        <p>Detalles del servicio intermedio.</p>
+      </div>
+      <div class="card">
+        <img src="img6.png" alt="Servicio avanzado">
+        <h3>Servicio avanzado</h3>
+        <p>199 €</p>
+        <p>Detalles del servicio avanzado.</p>
+      </div>
+    </div>
+  </section>
+  
+  <section class="plans">
+    <h2>Elige tu plan</h2>
+    <div class="grid">
+      <div class="card">
+        <img src="img7.png" alt="Plan 1">
+        <h3>Suscripción Oro</h3>
+        <p>100,00 €</p>
+        <p>Cada mes</p>
+        <p>Acceso exclusivo a clases y talleres.</p>
+        <button>Registrarse</button>
+      </div>
+      <div class="card">
+        <img src="img8.png" alt="Plan 2">
+        <h3>Suscripción Plata</h3>
+        <p>80,00 €</p>
+        <p>Cada mes</p>
+        <p>Acceso limitado a recursos premium.</p>
+        <button>Registrarse</button>
+      </div>
+      <div class="card">
+        <img src="img9.png" alt="Plan 3">
+        <h3>Suscripción Bronce</h3>
+        <p>50,00 €</p>
+        <p>Cada mes</p>
+        <p>Acceso básico a recursos principales.</p>
+        <button>Registrarse</button>
+      </div>
+    </div>
+  </section>
+  
+  <section class="about">
+    <h2>Más sobre nuestra marca</h2>
+    <div class="content">
+      <img src="img10.png" alt="Nuestra historia">
+      <div class="text">
+        <p>Cuenta quién eres, tus orígenes y lo que te inspira. Aprovecha la creatividad para destacar.</p>
+        <button>Leer más</button>
+      </div>
+    </div>
+  </section>
+  
+  <section class="social">
+    <h2>Síguenos en las redes sociales</h2>
+    <div class="grid">
+      <div class="card">
+        <img src="img11.png" alt="Red social 1">
+        <button>Redes sociales</button>
+      </div>
+      <div class="card">
+        <img src="img12.png" alt="Red social 2">
+        <button>Redes sociales</button>
+      </div>
+      <div class="card">
+        <img src="img13.png" alt="Red social 3">
+        <button>Redes sociales</button>
+      </div>
+    </div>
+  </section>
+  
+  <section class="cta-section">
+    <h2>¡Únete a nuestra comunidad hoy!</h2>
+    <p>Regístrate ahora y descubre los beneficios exclusivos de VitalGym.</p>
+    <button>Únete ahora</button>
+  </section>
+  
+  <footer>
+    <p>&copy; 2025 VitalGym. Diseñado con pasión y dedicación.</p>
+  </footer>
 
-  <!-- Secciones principales -->
-  <div class="sections-buttons">
-    <h2>Explora nuestras zonas</h2>
-    <button class="big-btn" onclick="window.location.href='{{ url_for('fitness') }}'">
-      <i class="fas fa-running"></i> Zona Fitness
-    </button>
-    <button class="big-btn" onclick="window.location.href='{{ url_for('alimentacion') }}'">
-      <i class="fas fa-utensils"></i> Zona Alimentación
-    </button>
-  </div>
-
-  <!-- EJEMPLO DE CONTENIDO EXTRA (si quieres relleno) -->
-  <p style="line-height:1.6; margin-bottom:30px;">
-    Bienvenido a tu plataforma de Fitness y Nutrición IA. Mantente al tanto de las últimas noticias, 
-    recibe recomendaciones personalizadas, y lleva tu progreso al siguiente nivel. 
-    Explora las diferentes secciones para aprovechar al máximo todas las funcionalidades.
-  </p>
-
-  <!-- Si quieres más relleno, repite secciones, pone imágenes, etc... -->
-
-</div>
-
-<!-- BOTÓN FLOTANTE PARA ABRIR CHAT -->
-<button class="chat-float-btn" id="chatFloatBtn">
-  <i class="fas fa-comment"></i>
-</button>
-
-<!-- MINI VENTANA DE CHAT -->
-<div class="chat-window" id="chatWindow">
-  <div class="chat-header">
-    <strong>ChatGPT</strong>
-  </div>
-  <div class="chat-body" id="chatBody"></div>
-  <div class="chat-footer">
-    <input type="text" id="chatInput" placeholder="Escribe tu mensaje...">
-    <button id="sendChatBtn">Enviar</button>
-  </div>
-</div>
-
-<script>
-  // Menú hamburguesa
-  function toggleDropdown() {
-    const dropdownMenu = document.getElementById("dropdownMenu");
-    if (dropdownMenu.style.display === "flex") {
-      dropdownMenu.style.display = "none";
-    } else {
-      dropdownMenu.style.display = "flex";
-      dropdownMenu.style.flexDirection = "column";
-    }
-  }
-
-  // Carrusel de Noticias
-  const carouselSlide = document.getElementById("carouselSlide");
-  const carouselItems = document.querySelectorAll(".carousel-item");
-  const prevBtn = document.getElementById("carouselPrev");
-  const nextBtn = document.getElementById("carouselNext");
-  let counter = 0;
-  let size = carouselItems[0].clientWidth;
-
-  function updateCarousel() {
-    carouselSlide.style.transform = "translateX(" + (-size * counter) + "px)";
-  }
-  nextBtn.addEventListener("click", () => {
-    if (counter >= carouselItems.length - 1) {
-      counter = 0;
-    } else {
-      counter++;
-    }
-    updateCarousel();
-  });
-  prevBtn.addEventListener("click", () => {
-    if (counter <= 0) {
-      counter = carouselItems.length - 1;
-    } else {
-      counter--;
-    }
-    updateCarousel();
-  });
-  window.addEventListener("resize", () => {
-    size = carouselItems[0].clientWidth;
-    updateCarousel();
-  });
-
-  // Chat flotante
-  const chatFloatBtn = document.getElementById("chatFloatBtn");
-  const chatWindow = document.getElementById("chatWindow");
-  const chatBody = document.getElementById("chatBody");
-  const chatInput = document.getElementById("chatInput");
-  const sendChatBtn = document.getElementById("sendChatBtn");
-
-  let chatOpen = false;
-  chatFloatBtn.addEventListener("click", () => {
-    chatOpen = !chatOpen;
-    chatWindow.style.display = chatOpen ? "flex" : "none";
-  });
-
-  // Ejemplo: Enviar mensaje al backend con fetch (ruta "/chat" en tu Flask)
-  sendChatBtn.addEventListener("click", () => {
-    const userMsg = chatInput.value.trim();
-    if (!userMsg) return;
-    addMessage(userMsg, "user");
-    chatInput.value = "";
-    fetch("/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: userMsg })
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.reply) {
-        addMessage(data.reply, "bot");
-      } else {
-        addMessage("Lo siento, no tengo respuesta en este momento.", "bot");
+  <!-- JavaScript: Header Scroll y Slider -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Header: ocultar/mostrar al hacer scroll
+      let lastScrollTop = 0;
+      const header = document.querySelector("header");
+      window.addEventListener("scroll", function() {
+        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        if (scrollTop > lastScrollTop && scrollTop > header.offsetHeight) {
+          header.classList.add("hidden");
+        } else {
+          header.classList.remove("hidden");
+        }
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+      });
+      
+      // Slider automático y manual
+      const slides = document.querySelectorAll('.fade-image');
+      let currentSlide = 0;
+      const normalTransition = 3000; // Transición automática de 3 segundos
+      const fastTransition = normalTransition / 2; // 1.5 segundos al hacer clic
+      const autoIntervalDuration = 8000; // Intervalo automático de 8 segundos
+      
+      // Mostrar la primera imagen
+      slides[currentSlide].classList.add('active');
+      
+      function showSlide(index, transitionTime) {
+        slides.forEach(slide => {
+          slide.style.transitionDuration = transitionTime + "ms";
+          slide.classList.remove('active');
+        });
+        slides[index].classList.add('active');
       }
-    })
-    .catch(() => {
-      addMessage("Error al conectar con el servidor.", "bot");
+      
+      let autoSlideInterval = setInterval(function() {
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide, normalTransition);
+      }, autoIntervalDuration);
+      
+      function resetAutoSlideInterval() {
+        clearInterval(autoSlideInterval);
+        autoSlideInterval = setInterval(function() {
+          currentSlide = (currentSlide + 1) % slides.length;
+          showSlide(currentSlide, normalTransition);
+        }, autoIntervalDuration);
+      }
+      
+      document.querySelector('.next').addEventListener('click', function() {
+        clearInterval(autoSlideInterval);
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide, fastTransition);
+        resetAutoSlideInterval();
+      });
+      
+      document.querySelector('.prev').addEventListener('click', function() {
+        clearInterval(autoSlideInterval);
+        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+        showSlide(currentSlide, fastTransition);
+        resetAutoSlideInterval();
+      });
     });
-  });
-
-  function addMessage(text, sender) {
-    const msgDiv = document.createElement("div");
-    msgDiv.classList.add("message");
-    if (sender === "user") {
-      msgDiv.classList.add("user");
-    }
-    msgDiv.textContent = text;
-    chatBody.appendChild(msgDiv);
-    chatBody.scrollTop = chatBody.scrollHeight;
-  }
-</script>
-
+  </script>
 </body>
 </html>

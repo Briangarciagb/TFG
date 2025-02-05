@@ -1,4 +1,4 @@
-// Mostrar/ocultar sidebar
+// Función para mostrar/ocultar sidebar
 function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
   sidebar.classList.toggle('active');
@@ -6,10 +6,32 @@ function toggleSidebar() {
 
 // Escuchar eventos cuando cargue la página
 document.addEventListener("DOMContentLoaded", function () {
-  // Botón "Recargar API" en la página Principal (si existe)
+  console.log("Script cargado correctamente...");
+
+  // --- Manejo del sidebar ---
+  const sidebar = document.getElementById('sidebar');
+  if (sidebar) {
+    const menuButton = document.querySelector(".hamburger-menu");
+    if (menuButton) {
+      menuButton.addEventListener("click", toggleSidebar);
+    }
+  }
+
+  // --- Lógica para el botón de configuración ---
+  const configButton = document.querySelector(".config-btn");
+  if (configButton) {
+    configButton.addEventListener("click", function () {
+      console.log("Redirigiendo a la página de configuración...");
+      window.location.href = "/configuracion"; // Redirige a la página de configuración
+    });
+  } else {
+    console.warn("⚠️ No se encontró el botón de configuración en esta página.");
+  }
+
+  // --- Botón "Recargar API" en la página Principal (si existe) ---
   const refreshButton = document.getElementById("refreshApiButton");
   const statusMessage = document.getElementById("statusMessage");
-  
+
   if (refreshButton && statusMessage) {
     refreshButton.addEventListener("click", function () {
       const hoy = new Date().toISOString().split("T")[0];
@@ -40,13 +62,12 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // --- LÓGICA PARA LA PÁGINA FITNESS ---
-  // Si estamos en "fitness.html", busca el elemento con id="fitnessDataTable"
+  // --- Lógica para la página fitness ---
   const fitnessDataTable = document.getElementById("fitnessDataTable");
   if (fitnessDataTable) {
-    // Automáticamente cargamos la fecha de hoy (puedes permitir que el usuario elija)
+    console.log("Fitness table encontrada. Cargando datos...");
     const hoy = new Date().toISOString().split("T")[0];
-    
+
     fetch("/datos", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -56,7 +77,6 @@ document.addEventListener("DOMContentLoaded", function () {
       .then(data => {
         if (data.status === "success") {
           const { pasos, calorias, distancia, sueno } = data.data;
-          // Rellenar la tabla
           fitnessDataTable.innerHTML = `
             <tr>
               <th>Pasos</th>

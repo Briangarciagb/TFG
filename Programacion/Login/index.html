@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <title>Animated Login Page</title>
+</head>
+<body>
+    <div class="container" id="container">
+        <div class="form-container sign-up">
+            <form >
+                <h1>Crear Cuenta</h1>
+                <div class="social-icons">
+                    <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social" onclick="loginWithGoogle()">
+                        <i class="fa-brands fa-google"></i>
+                    </a>
+                    <a href="#" class="social"><i class="fa-brands fa-github"></i></a>
+                    <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+                <span>O usa tu Email para registrarte</span>
+                <input type="text" placeholder="Nombre" />
+                <input type="email" placeholder="Email" />
+                <input type="password" placeholder="Contraseña" />
+                <button>Crear Cuenta</button>
+            </form>
+        </div>
+        <div class="form-container sign-in">
+            <form>
+                <h1>Iniciar Sesión</h1>
+                <div class="social-icons">
+                    <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social" onclick="loginWithGoogle(event)">
+                        <i class="fa-brands fa-google"></i>
+                    </a>
+                    
+                    <a href="#" class="social"><i class="fa-brands fa-github"></i></a>
+                    <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+                
+                <span>O usa tu Email para iniciar sesion</span>
+                <input type="email" placeholder="Email" />
+                <input type="password" placeholder="Contraseña" />
+                <a href="#">¿Olvidaste tu contraseña?</a>
+                <button>Iniciar Sesion</button>
+            </form>
+        </div>
+        <div class="toggle-container">
+            <div class="toggle">
+                <div class="toggle-panel toggle-left">
+                    <h1>Bienvenido</h1>
+                    <p>Crea una cuenta para poder usar nuestros servicios</p>
+                    <button class="hidden" id="login">Iniciar Sesion</button>
+                </div>
+                <div class="toggle-panel toggle-right">
+                    <h1>Hola de Vuelta</h1>
+                    <p>Inicia sesion para acceder a todos nuestros apartados</p>
+                    <button class="hidden" id="register">Crear cuenta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+   
+    
+    <script src="script.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script>
+        function loginWithGoogle(event) {
+    event.preventDefault(); // Previene la recarga de la página
+
+    // Si aún no has inicializado la API, inicialízala aquí (o, mejor, hazlo al cargar la página)
+    google.accounts.id.initialize({
+        client_id: "305857586617-8dvrrnd94hr3io74k311lg3610176ua0.apps.googleusercontent.com",
+        callback: handleCredentialResponse,
+    });
+
+    google.accounts.id.prompt(); // Muestra el popup
+}
+
+         window.onload = function() {
+        google.accounts.id.initialize({
+            client_id: "305857586617-8dvrrnd94hr3io74k311lg3610176ua0.apps.googleusercontent.com",
+            callback: handleCredentialResponse,
+        });
+        
+        // Renderiza el botón de Google en el contenedor especificado
+        google.accounts.id.renderButton(
+            document.getElementById("googleSignInButton"),
+            { theme: "outline", size: "large" } // Puedes personalizarlo
+        );
+    };
+
+    function handleCredentialResponse(response) {
+        console.log("Token de Google:", response.credential);
+        alert("Inicio de sesión exitoso con token: " + response.credential);
+        // Aquí puedes enviar el token al backend o procesarlo según necesites
+    }
+        function loginWithGoogle() {
+            google.accounts.id.initialize({
+                client_id: "305857586617-8dvrrnd94hr3io74k311lg3610176ua0.apps.googleusercontent.com"
+                callback: handleCredentialResponse,
+            });
+    
+            google.accounts.id.prompt(); // Muestra el popup
+        }
+    
+        function handleCredentialResponse(response) {
+            console.log("Token de Google:", response.credential);
+            alert("Inicio de sesión exitoso con token: " + response.credential);
+            // Puedes enviar el token al backend si es necesario
+        }
+    </script>
+    
+    
+</body>
+</html>
