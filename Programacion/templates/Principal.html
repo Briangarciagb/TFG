@@ -9,10 +9,13 @@
 <body>
     
   <header>
+   
+<h1>VytalGym</h1>
     <div class="logo">
-      <h1>VitalGym</h1>
+
     </div>
     <nav>
+   
       <a href="{{ url_for('pagina') }}">Actividad</a>
       <a href="{{ url_for('fitness') }}">Fitness</a>
       <a href="{{ url_for('precios') }}">Servicios</a>
@@ -20,15 +23,16 @@
       <a href="{{ url_for('contacto') }}">Contacto</a>
     </nav>
     <div class="actions">
-      <button onclick="location.href='../Login/index.html';">Iniciar sesión</button>
-      <button onclick="location.href='reservar.html';">Registrarse</button>
+      <button onclick="location.href='/login?mode=login';">Iniciar sesión</button>
+      <button onclick="location.href='/login?mode=register';">Registrarse</button>
     </div>
+    
   </header>
 
   <section class="hero">
     <div class="content">
       <h1>Bienvenido a nuestra página</h1>
-      <p>Bienestar, salud y fitness gracias a la IA.</p>
+      <p>Metabolic Exercise and Nutrition</p>
       <button>Ver Actividad</button>
     </div>
     
