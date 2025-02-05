@@ -14,6 +14,7 @@ SCOPES = [
 # Ruta absoluta al archivo credentials.json
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))  # Ruta base
 CREDENTIALS_PATH = os.path.join(BASE_DIR, '../claves seguras/credentials.json')
+
 def get_credentials():
     creds = None
     if 'credentials' in session:  # Busca credenciales almacenadas en la sesión

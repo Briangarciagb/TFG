@@ -8,9 +8,27 @@ from datetime import datetime
 import os
 
 # Configuración de la aplicación Flask
-app = Flask(__name__, template_folder='../templates')
+app = Flask(__name__, template_folder='Programacion//templates', static_folder='static')
 app.secret_key = "clave_secreta_segura"
 CORS(app)
+
+app = Flask(
+    __name__,
+    template_folder='../templates',
+    static_folder='../static'
+)
+
+@app.route('/contacto')
+def contacto():
+    return render_template('contacto.html')
+
+@app.route('/pagina')
+def pagina():
+    return render_template('Pagina.html')
+
+@app.route('/precios')
+def precios():
+    return render_template('Precios.html')
 
 # Rutas de la aplicación
 @app.route('/')
@@ -40,37 +58,6 @@ def autorizar():
 @app.route('/oauth2callback')
 def callback():
     return oauth2callback()
-
-@app.route('/datos', methods=['POST'])
-def obtener_datos():
-    try:
-        data = request.get_json()
-        fecha_str = data.get("fecha")
-        if not fecha_str:
-            return jsonify({"status": "error", "message": "Fecha no proporcionada."}), 400
-
-        fecha = datetime.strptime(fecha_str, "%Y-%m-%d")
-        creds = get_credentials()
-        if not creds:
-            return jsonify({"status": "error", "message": "No autorizado"}), 401
-
-        service = build("fitness", "v1", credentials=creds)
-        fitness_data = get_fitness_data(service, fecha)
-        sleep_data = get_sleep_data(service, fecha)
-
-        # Aquí actualizamos las claves para que coincidan con las esperadas por el frontend
-        return jsonify({
-            "status": "success",
-            "data": {
-                "pasos": fitness_data.get("steps", 0),
-                "calorias": fitness_data.get("calories", 0),
-                "distancia": fitness_data.get("distance", 0),
-                "sueno": sleep_data.get("sleep", 0)
-            }
-        })
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
-
 
 @app.route('/ver_credenciales')
 def ver_credenciales():
