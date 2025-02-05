@@ -341,4 +341,15 @@ body {
       font-size: 0.9rem;
     }
   }
+  img {
+    display: block; /* Evita espacios por defecto en imágenes en línea */
+    margin: 0;
+    padding: 0;
+    border-radius: 50%; /* Para los bordes redondos */
+  }
   
+  .rounded-logo {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+  }
