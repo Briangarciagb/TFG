@@ -1,78 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://kit.fontawesome.com/64d58efce2.js"
+      crossorigin="anonymous"
+    ></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/loginstyle.css') }}">
 
-    <title>Animated Login Page</title>
-</head>
-<body>
-    <div class="container" id="container">
-        <div class="form-container sign-up">
-            <form >
-                <h1>Crear Cuenta</h1>
-                <div class="social-icons">
-                    <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="social"><i class="fa-brands fa-google"></i></a>
-                    <a href="#" class="social"><i class="fa-brands fa-github"></i></a>
-                    <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
-                </div>
-                <span>O usa tu Email para registrarte</span>
-                <input type="text" placeholder="Nombre" />
-                <input type="email" placeholder="Email" />
+    <title>Inicio de sesion y registrarse</title>
+  </head>
+  <body>
+    <!-- Se crea un div wrapper para englobar todo el contenido -->
+    <div class="wrapper">
+      <div class="container">
+        <div class="forms-container">
+          <div class="signin-signup">
+            <form action="#" class="sign-in-form">
+              <h2 class="title">Iniciar Sesion</h2>
+              <div class="input-field">
+                <i class="fas fa-user"></i>
+                <input type="text" placeholder="Usuario" />
+              </div>
+              <div class="input-field">
+                <i class="fas fa-lock"></i>
                 <input type="password" placeholder="Contraseña" />
-                <button>Crear Cuenta</button>
+              </div>
+              <input type="submit" value="Iniciar Sesion" class="btn solid" />
+              <p class="social-text">O inicia sesion con tu cuenta de google</p>
+              <div class="social-media">
+                <a href="https://accounts.google.com/signin" class="social-icon google">
+                    <img src="img/google.png" alt="Google" class="social-img">
+                </a>
+            </div>                     
             </form>
-        </div>
-        <div class="form-container sign-in">
-            <form>
-                <h1>Iniciar Sesión</h1>
-                <div class="social-icons">
-                    <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
-                    <a href="{{ url_for('autorizar') }}" class="social"><i class="fa-brands fa-google"></i>
-                    <a href="#" class="social"><i class="fa-brands fa-github"></i></a>
-                    <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
-                </div>
-                <span>O usa tu Email para iniciar sesion</span>
+            <form action="#" class="sign-up-form">
+              <h2 class="title">Registrarse</h2>
+              <div class="input-field">
+                <i class="fas fa-user"></i>
+                <input type="text" placeholder="Usuario" />
+              </div>
+              <div class="input-field">
+                <i class="fas fa-envelope"></i>
                 <input type="email" placeholder="Email" />
+              </div>
+              <div class="input-field">
+                <i class="fas fa-lock"></i>
                 <input type="password" placeholder="Contraseña" />
-                <a href="#">¿Olvidaste tu contraseña?</a>
-                <button>Iniciar Sesion</button>
+              </div>
+              <input type="submit" class="btn" value="Registrarse" />
+              <p class="social-text">o registrate con tu cuenta de google</p>
+              <div class="social-media">
+                <a href="https://accounts.google.com/signin" class="social-icon google">
+                    <img src="img/google.png" alt="Google" class="social-img">
+                </a>
+            </div>                        
             </form>
+          </div>
         </div>
-        <div class="toggle-container">
-            <div class="toggle">
-                <div class="toggle-panel toggle-left">
-                    <h1>Bienvenido</h1>
-                    <p>Crea una cuenta para poder usar nuestros servicios</p>
-                    <button class="hidden" id="login">Iniciar Sesion</button>
-                </div>
-                <div class="toggle-panel toggle-right">
-                    <h1>Hola de Vuelta</h1>
-                    <p>Inicia sesion para acceder a todos nuestros apartados</p>
-                    <button class="hidden" id="register">Crear cuenta</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
+        <div class="panels-container">
+          <div class="panel left-panel">
+            <div class="content">
+              <h3>Uno de nosotros?</h3>
+              <p>
+                para mantenerte conectado, inicia sesion  
+              </p>
+              <button class="btn transparent" id="sign-up-btn">
+                Registrarse
+              </button>
+            </div>
+          </div>
+          <div class="panel right-panel">
+            <div class="content">
+              <h3>Eres nuevo?</h3>
+              <p>
+                Introduce tus datos e inicia con nosotros
+              </p>
+              <button class="btn transparent" id="sign-in-btn">
+                Iniciar Sesion
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <script src="{{ url_for('static', filename='js/loginscript.js') }}"></script>
-    <script>
-        window.addEventListener('load', function() {
-          const urlParams = new URLSearchParams(window.location.search);
-          const mode = urlParams.get('mode');
-          const container = document.getElementById('container');
-      
-          // Si mode es 'register', activamos la vista de registro (toggle)
-          if (mode === 'register') {
-            container.classList.add('active');
-          } else {
-            container.classList.remove('active');
-          }
-        });
-      </script>
-      
-</body>
+  </body>
 </html>

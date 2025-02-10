@@ -3,71 +3,280 @@
 <head>
   <meta charset="UTF-8">
   <title>Zona Fitness - Proyecto IA</title>
+  <!-- Enlaces a hojas de estilo y librerías externas -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script>
   <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+  
   <style>
-    /* Barra superior con hamburguesa a la izquierda y botón config a la derecha */
-    .top-bar {
-      background-color: #24292e; 
-      color: #fff; 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      padding: 10px 20px;
+    /* ================= Global Design Styles ================= */
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(180deg, #001a33 0%, #002838 40%, #002f2f 100%);
+      color: #fff;
+      scroll-behavior: smooth;
+    }
+    
+    /* Header (nuevo menú) */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: rgba(0, 10, 20, 0.95);
+      color: #fff;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      transition: transform 0.3s ease-in-out;
+    }
+    
+    header.hidden {
+      transform: translateY(-100%);
+    }
+    
+    header nav {
+      display: flex;
+      gap: 1.5rem;
+    }
+    
+    header nav a {
+      text-decoration: none;
+      color: #fff;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+    
+    header nav a:hover {
+      color: #58a058;
+    }
+    
+    header .actions {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    header .actions button {
+      padding: 0.5rem 1rem;
+      border: none;
+      background-color: #1a1a1a;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background-color 0.3s ease;
+    }
+    
+    header .actions button:hover {
+      background-color: #58a058;
+    }
+    
+    /* ================= Hero / Banner ================= */
+    /* Si deseas que el banner de fitness se parezca a una “hero” */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 80vh;
+      background-color: rgba(0, 0, 0, 0);
+      text-align: center;
+      padding: 2rem;
       position: relative;
     }
-    .hamburger-menu {
-      cursor: pointer;
-      font-size: 1.4rem;
+    
+    .hero h1 {
+      font-size: 4rem;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: -1px;
     }
-    .hamburger-menu i {
+    
+    .hero p {
+      font-size: 1.5rem;
+      margin-top: 1rem;
+      color: #bbbbbb;
+    }
+    
+    .hero button {
+      margin-top: 2rem;
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      border: none;
+      background-color: #004d40;
       color: #fff;
-    }
-    .dropdown-menu {
-      background: #f8f8f8;
-      position: absolute;
-      top: 60px; 
-      left: 20px; 
-      width: 200px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      display: none;
-      flex-direction: column;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      z-index: 999;
-    }
-    .dropdown-menu a {
-      text-decoration: none;
-      color: #333;
-      padding: 10px 15px;
-      border-bottom: 1px solid #ddd;
-    }
-    .dropdown-menu a:hover {
-      background-color: #eee;
-    }
-    .dropdown-menu a:last-child {
-      border-bottom: none;
-    }
-    .config-btn {
-      background-color: #f8c146; 
-      color: #222; 
-      padding: 10px 20px; 
-      border-radius: 20px; 
-      border: none; 
       cursor: pointer;
-      font-size: 0.95rem;
+      border-radius: 25px;
+      transition: background-color 0.3s ease, transform 0.3s ease;
     }
-
-    /* Contenedor principal */
+    
+    .hero button:hover {
+      background-color: #58a058;
+      transform: scale(1.1);
+    }
+    
+    /* ================= Secciones Generales ================= */
+    section {
+      padding: 3rem 2rem;
+      text-align: center;
+      background-color: transparent;
+    }
+    
+    section h2 {
+      font-size: 2.5rem;
+      color: #58a058;
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+    }
+    
+    /* ================= Grid y Tarjetas ================= */
+    section .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    
+    section .grid .card {
+      background-color: rgba(28, 40, 28, 0.9);
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+      padding: 1.5rem;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+    
+    section .grid .card:hover {
+      transform: translateY(-10px) scale(1.05);
+    }
+    
+    section .grid .card img {
+      width: 100%;
+      height: 200px;
+      border-radius: 12px;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    
+    section .grid .card img:hover {
+      transform: scale(1.1);
+    }
+    
+    section .grid .card h3 {
+      font-size: 1.5rem;
+      color: #fff;
+      margin: 1rem 0 0.5rem;
+    }
+    
+    section .grid .card p {
+      color: #ccc;
+      font-size: 1rem;
+    }
+    
+    /* ================= CTA Section ================= */
+    .cta-section {
+      padding: 3rem;
+      text-align: center;
+    }
+    
+    .cta-section h2 {
+      font-size: 2rem;
+      color: #58a058;
+      margin-bottom: 1rem;
+    }
+    
+    .cta-section p {
+      font-size: 1.2rem;
+      color: #ccc;
+      margin: 1rem 0;
+    }
+    
+    .cta-section button {
+      padding: 1rem 2rem;
+      border: none;
+      background-color: #004d40;
+      color: #fff;
+      font-size: 1rem;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+    
+    .cta-section button:hover {
+      background-color: #58a058;
+      transform: scale(1.1);
+    }
+    
+    /* ================= Social Section ================= */
+    .social .grid {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+    }
+    
+    .social .card {
+      background-color: rgba(28, 40, 28, 0.9);
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+      padding: 1rem;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+    
+    .social .card img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin-bottom: 1rem;
+    }
+    
+    .social .card button {
+      padding: 0.5rem 1rem;
+      border: none;
+      background-color: #004d40;
+      color: #fff;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+    
+    .social .card button:hover {
+      background-color: #58a058;
+    }
+    
+    /* ================= Footer ================= */
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      background: rgba(0, 10, 20, 0.95);
+      color: #58a058;
+    }
+    
+    /* ================= Ajustes para Imágenes ================= */
+    img {
+      display: block;
+      margin: 0;
+      padding: 0;
+      border-radius: 50%;
+    }
+    
+    .rounded-logo {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+    }
+    
+    /* ================= Estilos Propios de la Página Fitness ================= */
     .main-content {
       padding: 40px 20px;
       max-width: 1200px;
       margin: 0 auto;
     }
-
-    /* Banner */
+    
     .fitness-banner {
       background: linear-gradient(to right, #56ccf2, #2f80ed);
       color: #fff;
@@ -75,16 +284,17 @@
       border-radius: 6px;
       margin-bottom: 30px;
     }
+    
     .fitness-banner h1 {
       font-size: 2.5rem;
       margin-bottom: 10px;
     }
+    
     .fitness-banner p {
       font-size: 1.1rem;
       line-height: 1.5;
     }
-
-    /* Sección para selector de fecha */
+    
     .date-selector {
       background: #fff;
       border-radius: 8px;
@@ -95,189 +305,224 @@
       flex-direction: column;
       gap: 10px;
       align-items: flex-start;
+      color: #000;
     }
+    
     .date-selector label {
       font-weight: bold;
     }
+    
     .date-selector input[type="date"] {
-      padding: 6px; 
-      border-radius: 4px; 
+      padding: 6px;
+      border-radius: 4px;
       border: 1px solid #ccc;
     }
+    
     .date-selector button {
-      background-color: #007bff; 
-      color: #fff; 
-      border: none; 
-      padding: 10px 15px; 
-      border-radius: 6px; 
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
       cursor: pointer;
     }
+    
     .date-selector button:hover {
       background-color: #0056b3;
     }
-
-    /* Sección de estadísticas */
+    
     .stats-section {
       background: #fff;
       border-radius: 8px;
       padding: 20px;
       margin-bottom: 30px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      color: #000;
     }
+    
     .stats-section h2 {
       margin-bottom: 20px;
     }
+    
     .stats-cards {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 20px;
     }
+    
     .stat-card {
-      border: 1px solid #eee; 
-      border-radius: 6px; 
-      padding: 15px; 
-      text-align: center; 
+      border: 1px solid #eee;
+      border-radius: 6px;
+      padding: 15px;
+      text-align: center;
       background: #f7f9fa;
     }
+    
     .stat-card div {
-      font-size: 2.2rem; 
-      margin-bottom: 5px; 
+      font-size: 2.2rem;
+      margin-bottom: 5px;
       color: #007bff;
     }
+    
     .stat-card p {
       color: #666;
     }
-
-    /* Gráfica */
+    
     .chart-section {
       background: #fff;
       border-radius: 8px;
       padding: 20px;
       margin-bottom: 30px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      color: #000;
     }
+    
     .chart-section h2 {
       margin-bottom: 15px;
     }
-
-    /* Ejercicios */
+    
     .exercises-section {
       background: #fff;
       border-radius: 8px;
       padding: 20px;
       margin-bottom: 30px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      color: #000;
     }
+    
     .exercise-list {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 20px;
     }
+    
     .exercise-card {
       border: 1px solid #eee;
       border-radius: 6px;
       overflow: hidden;
       background: #f7f9fa;
     }
+    
     .exercise-card img {
-      width: 100%; 
+      width: 100%;
       height: auto;
     }
+    
     .exercise-card div {
       padding: 15px;
     }
+    
     .exercise-card h3 {
-      color: #007bff; 
+      color: #007bff;
       margin-bottom: 8px;
     }
-
-    /* Noticias */
+    
     .news-section {
       background: #fff;
       border-radius: 8px;
       padding: 20px;
       margin-bottom: 30px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      color: #000;
     }
+    
     .news-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 20px;
     }
+    
     .news-item {
       border: 1px solid #eee;
       border-radius: 6px;
       padding: 15px;
       background: #f7f9fa;
     }
+    
     .news-item h3 {
-      color: #007bff; 
+      color: #007bff;
       margin-bottom: 8px;
     }
-
-    /* Tabla de datos en vivo */
+    
     .live-data-section {
       background: #fff;
       border-radius: 8px;
       padding: 20px;
       margin-bottom: 30px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      color: #000;
     }
+    
     .data-table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 10px;
     }
+    
     .data-table th, .data-table td {
-      border: 1px solid #ddd; 
-      padding: 10px; 
+      border: 1px solid #ddd;
+      padding: 10px;
       text-align: center;
     }
+    
     .data-table th {
       background-color: #007bff;
       color: #fff;
     }
-
-    /* Footer */
+    
     .fitness-footer {
-      background: #24292e; 
-      color: #fff; 
-      text-align: center; 
-      padding: 15px; 
-      border-radius: 6px; 
+      background: #24292e;
+      color: #fff;
+      text-align: center;
+      padding: 15px;
+      border-radius: 6px;
       margin-top: 30px;
     }
   </style>
 </head>
 <body>
-
-  <div class="top-bar">
-    <div class="hamburger-menu" onclick="toggleDropdown()">
-      <i class="fas fa-bars"></i>
-    </div>
-    <div class="dropdown-menu" id="dropdownMenu">
-      <a href="{{ url_for('principal') }}">Inicio</a>
+  <!-- Nuevo Header con menú -->
+  <header>
+    <h1>VytalGym</h1>
+    <div class="logo"></div>
+    <nav>
+      <a href="{{ url_for('pagina') }}">Actividad</a>
       <a href="{{ url_for('fitness') }}">Fitness</a>
+      <a href="{{ url_for('precios') }}">Servicios</a>
       <a href="{{ url_for('alimentacion') }}">Alimentación</a>
-      <a href="{{ url_for('configuracion') }}">Configuración</a>
+      <a href="{{ url_for('contacto') }}">Contacto</a>
+    </nav>
+    <div class="actions">
+      {% if user %}
+        <!-- Si el usuario está autenticado, se muestra la foto de perfil -->
+        <div class="profile">
+          <img src="{{ user['picture'] }}" alt="Foto de Perfil" style="width:40px; height:40px; border-radius:50%; cursor:pointer;" onclick="location.href='{{ url_for('profile') }}';">
+        </div>
+        <button onclick="location.href='{{ url_for('logout') }}';">Cerrar sesión</button>
+      {% else %}
+        <!-- Si el usuario NO está autenticado, se muestran los botones de login -->
+        <button onclick="location.href='/login?mode=login';">Iniciar sesión</button>
+        <button onclick="location.href='/login?mode=register';">Registrarse</button>
+      {% endif %}
     </div>
-    <button class="config-btn" onclick="window.location.href='{{ url_for('configuracion') }}'">
-      <i class="fas fa-cog"></i> Configuración
-    </button>
-  </div>
-
+  </header>
+  
+  <!-- Contenedor principal de la página -->
   <div class="main-content">
+    <!-- Banner de Fitness -->
     <div class="fitness-banner">
       <h1>Zona Fitness</h1>
       <p>Bienvenido a tu panel de Fitness más avanzado. Elige una fecha para ver tus datos de pasos, calorías, distancia y sueño.</p>
     </div>
-
+    
+    <!-- Selector de fecha -->
     <div class="date-selector">
       <label for="datePicker"><i class="fas fa-calendar"></i> Selecciona el día:</label>
       <input type="date" id="datePicker" value="">
       <button id="loadDataButton">Ver datos</button>
     </div>
-
+    
+    <!-- Sección de Estadísticas -->
     <div class="stats-section">
       <h2><i class="fas fa-chart-line"></i> Estadísticas</h2>
       <div class="stats-cards">
@@ -299,12 +544,14 @@
         </div>
       </div>
     </div>
-
+    
+    <!-- Sección de Gráfica -->
     <div class="chart-section">
       <h2><i class="fas fa-chart-bar"></i> Gráfica de Progreso</h2>
       <canvas id="fitnessChart" width="800" height="400"></canvas>
     </div>
-
+    
+    <!-- Sección de Ejercicios Destacados -->
     <div class="exercises-section">
       <h2><i class="fas fa-dumbbell"></i> Ejercicios Destacados</h2>
       <div class="exercise-list">
@@ -331,7 +578,8 @@
         </div>
       </div>
     </div>
-
+    
+    <!-- Sección de Noticias y Artículos -->
     <div class="news-section">
       <h2><i class="fas fa-newspaper"></i> Noticias y Artículos</h2>
       <div class="news-grid">
@@ -353,129 +601,122 @@
         </div>
       </div>
     </div>
-
+    
+    <!-- Sección de Datos en Vivo -->
     <div class="live-data-section">
       <h2><i class="fas fa-sync-alt"></i> Datos en vivo de Google Fit</h2>
       <table class="data-table" id="fitnessDataTable">
         <tr><td>Cargando datos...</td></tr>
       </table>
     </div>
-
+    
+    <!-- Footer -->
     <div class="fitness-footer">
       <p>&copy; 2025 - Proyecto Fitness IA</p>
     </div>
   </div>
-
+  
+  <!-- ================= JavaScript para Cargar Datos y Actualizar la Gráfica ================= -->
   <script>
-    const hamburger = document.querySelector(".hamburger-menu");
-    const dropdownMenu = document.getElementById("dropdownMenu");
-    function toggleDropdown() {
-      if (dropdownMenu.style.display === "flex") {
-        dropdownMenu.style.display = "none";
-      } else {
-        dropdownMenu.style.display = "flex";
-        dropdownMenu.style.flexDirection = "column";
+    document.addEventListener("DOMContentLoaded", function() {
+      const datePicker = document.getElementById("datePicker");
+      const loadDataButton = document.getElementById("loadDataButton");
+      const statSteps = document.getElementById("stat-steps");
+      const statCalories = document.getElementById("stat-calories");
+      const statDistance = document.getElementById("stat-distance");
+      const statSleep = document.getElementById("stat-sleep");
+      const dataTable = document.getElementById("fitnessDataTable");
+      let myChart = null;
+      
+      function updateChart(steps, cal, dist, sleep) {
+        const ctx = document.getElementById("fitnessChart").getContext("2d");
+        if (myChart) {
+          myChart.destroy();
+        }
+        myChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ["Pasos", "Calorías", "Distancia", "Sueño"],
+            datasets: [{
+              label: "Datos Seleccionados",
+              data: [steps, cal, dist, sleep],
+              backgroundColor: [
+                "rgba(0, 123, 255, 0.7)",
+                "rgba(40, 167, 69, 0.7)",
+                "rgba(111, 66, 193, 0.7)",
+                "rgba(255, 152, 0, 0.7)"
+              ],
+              borderColor: [
+                "rgba(0, 123, 255, 1)",
+                "rgba(40, 167, 69, 1)",
+                "rgba(111, 66, 193, 1)",
+                "rgba(255, 152, 0, 1)"
+              ],
+              borderWidth: 2
+            }]
+          },
+          options: {
+            scales: {
+              y: { beginAtZero: true }
+            },
+            responsive: true
+          }
+        });
       }
-    }
-
-    const datePicker = document.getElementById("datePicker");
-    const loadDataButton = document.getElementById("loadDataButton");
-    const statSteps = document.getElementById("stat-steps");
-    const statCalories = document.getElementById("stat-calories");
-    const statDistance = document.getElementById("stat-distance");
-    const statSleep = document.getElementById("stat-sleep");
-    const dataTable = document.getElementById("fitnessDataTable");
-    let myChart = null;
-
-    function loadDataForDate(dateStr) {
-      fetch("/datos", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fecha: dateStr })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.status === "success") {
-          const { pasos, calorias, distancia, sueno } = data.data;
-          statSteps.textContent = pasos > 0 ? pasos : "No disponible";
-          statCalories.textContent = calorias > 0 ? calorias : "No disponible";
-          statDistance.textContent = distancia > 0 ? distancia.toFixed(2) : "No disponible";
-          statSleep.textContent = sueno > 0 ? sueno.toFixed(2) : "No disponible";
-
-          dataTable.innerHTML = `
-            <tr>
-              <th>Pasos</th>
-              <th>Calorías</th>
-              <th>Distancia (km)</th>
-              <th>Sueño (h)</th>
-            </tr>
-            <tr>
-              <td>${pasos > 0 ? pasos : "N/A"}</td>
-              <td>${calorias > 0 ? calorias : "N/A"}</td>
-              <td>${distancia > 0 ? distancia.toFixed(2) : "N/A"}</td>
-              <td>${sueno > 0 ? sueno.toFixed(2) : "N/A"}</td>
-            </tr>
-          `;
-          updateChart(pasos, calorias, distancia, sueno);
-        } else {
+      
+      function loadDataForDate(dateStr) {
+        fetch("/datos", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fecha: dateStr })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === "success") {
+            const { pasos, calorias, distancia, sueno } = data.data;
+            statSteps.textContent = pasos > 0 ? pasos : "No disponible";
+            statCalories.textContent = calorias > 0 ? calorias : "No disponible";
+            statDistance.textContent = distancia > 0 ? distancia.toFixed(2) : "No disponible";
+            statSleep.textContent = sueno > 0 ? sueno.toFixed(2) : "No disponible";
+    
+            dataTable.innerHTML = `
+              <tr>
+                <th>Pasos</th>
+                <th>Calorías</th>
+                <th>Distancia (km)</th>
+                <th>Sueño (h)</th>
+              </tr>
+              <tr>
+                <td>${pasos > 0 ? pasos : "N/A"}</td>
+                <td>${calorias > 0 ? calorias : "N/A"}</td>
+                <td>${distancia > 0 ? distancia.toFixed(2) : "N/A"}</td>
+                <td>${sueno > 0 ? sueno.toFixed(2) : "N/A"}</td>
+              </tr>
+            `;
+            updateChart(pasos, calorias, distancia, sueno);
+          } else {
+            statSteps.textContent = "No disponible";
+            statCalories.textContent = "No disponible";
+            statDistance.textContent = "No disponible";
+            statSleep.textContent = "No disponible";
+            dataTable.innerHTML = `<tr><td colspan="4">Error: ${data.message}</td></tr>`;
+            updateChart(0, 0, 0, 0);
+          }
+        })
+        .catch(err => {
           statSteps.textContent = "No disponible";
           statCalories.textContent = "No disponible";
           statDistance.textContent = "No disponible";
           statSleep.textContent = "No disponible";
-          dataTable.innerHTML = `<tr><td colspan="4">Error: ${data.message}</td></tr>`;
+          dataTable.innerHTML = `<tr><td colspan="4">Error al cargar datos</td></tr>`;
           updateChart(0, 0, 0, 0);
-        }
-      })
-      .catch(err => {
-        statSteps.textContent = "No disponible";
-        statCalories.textContent = "No disponible";
-        statDistance.textContent = "No disponible";
-        statSleep.textContent = "No disponible";
-        dataTable.innerHTML = `<tr><td colspan="4">Error al cargar datos</td></tr>`;
-        updateChart(0, 0, 0, 0);
-      });
-    }
-
-    function updateChart(steps, cal, dist, sleep) {
-      const ctx = document.getElementById("fitnessChart").getContext("2d");
-      if (myChart) {
-        myChart.destroy();
+        });
       }
-      myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ["Pasos", "Calorías", "Distancia", "Sueño"],
-          datasets: [{
-            label: "Datos Seleccionados",
-            data: [steps, cal, dist, sleep],
-            backgroundColor: [
-              "rgba(0, 123, 255, 0.7)",
-              "rgba(40, 167, 69, 0.7)",
-              "rgba(111, 66, 193, 0.7)",
-              "rgba(255, 152, 0, 0.7)"
-            ],
-            borderColor: [
-              "rgba(0, 123, 255, 1)",
-              "rgba(40, 167, 69, 1)",
-              "rgba(111, 66, 193, 1)",
-              "rgba(255, 152, 0, 1)"
-            ],
-            borderWidth: 2
-          }]
-        },
-        options: {
-          scales: {
-            y: { beginAtZero: true }
-          },
-          responsive: true
-        }
-      });
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
+      
       const today = new Date().toISOString().split("T")[0];
       datePicker.value = today;
       loadDataForDate(today);
+      
       loadDataButton.addEventListener("click", function() {
         const selectedDate = datePicker.value;
         if (selectedDate) {
@@ -483,63 +724,9 @@
         }
       });
     });
-
-
-
-    document.addEventListener("DOMContentLoaded", function() {
-    const datePicker = document.getElementById("datePicker");
-    const loadDataButton = document.getElementById("loadDataButton");
-
-    const today = new Date().toISOString().split("T")[0];
-    datePicker.value = today;
-
-    function loadDataForDate(dateStr) {
-      fetch("/datos", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fecha: dateStr })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.status === "success") {
-          document.getElementById("stat-steps").textContent = data.data.pasos || "No disponible";
-          document.getElementById("stat-calories").textContent = data.data.calorias || "No disponible";
-          document.getElementById("stat-distance").textContent = data.data.distancia ? data.data.distancia.toFixed(2) : "No disponible";
-          document.getElementById("stat-sleep").textContent = data.data.sueno ? data.data.sueno.toFixed(2) : "No disponible";
-
-          document.getElementById("fitnessDataTable").innerHTML = `
-            <tr>
-              <th>Pasos</th>
-              <th>Calorías</th>
-              <th>Distancia (km)</th>
-              <th>Sueño (h)</th>
-            </tr>
-            <tr>
-              <td>${data.data.pasos || "N/A"}</td>
-              <td>${data.data.calorias || "N/A"}</td>
-              <td>${data.data.distancia ? data.data.distancia.toFixed(2) : "N/A"}</td>
-              <td>${data.data.sueno ? data.data.sueno.toFixed(2) : "N/A"}</td>
-            </tr>
-          `;
-          updateChart(data.data.pasos, data.data.calorias, data.data.distancia, data.data.sueno);
-        } else {
-          alert("Error: " + data.message);
-        }
-      })
-      .catch(() => {
-        alert("Error al cargar datos.");
-      });
-    }
-
-    loadDataButton.addEventListener("click", function() {
-      const selectedDate = datePicker.value;
-      if (selectedDate) {
-        loadDataForDate(selectedDate);
-      }
-    });
-
-    loadDataForDate(today);
-  });
   </script>
 </body>
 </html>
+ay porfin digo al finalno me acepta, por que hay un gato ahi que se ha quedado parao como como jajaj como que un gato 
+hay un gato ahi a la izquierda es mi gatito jajaja de donde es de que extension de esa como se llamaba tu gato?Tuti que guay, me lo instalare en cuanto pueda e
+nja ten el portatil de clase ahora cuando cambie de clase, me he einstalado chatgpt, no puede serrrrr 

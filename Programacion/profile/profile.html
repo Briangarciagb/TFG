@@ -7,15 +7,23 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/loginstyle.css') }}">
 </head>
 <body>
-  <h1>Bienvenido, {{ user.name }}!</h1>
-  <p>Correo: {{ user.email }}</p>
-  <!-- Puedes mostrar otros datos que venga en user_info, como imagen de perfil, etc. -->
-  
-  <!-- Por ejemplo, si deseas mostrar un iframe con la página principal -->
-  <iframe src="{{ url_for('principal') }}" width="100%" height="500" frameborder="0"></iframe>
-  
-  <a href="{{ url_for('principal') }}">Volver a la Página Principal</a>
-  
+  <header>
+    <h1>Bienvenido, {{ user['name'] }}!</h1>
+    <img src="{{ user['picture'] }}"
+         alt="Foto de Perfil"
+         style="width:100px; height:100px; border-radius:50%;">
+  </header>
+
+  <main>
+    <p>Correo: {{ user['email'] }}</p>
+
+    <!-- Iframe de la página principal -->
+    <iframe src="{{ url_for('pagina') }}"
+            style="width:100vw; height:calc(100vh - 150px); border:none;"></iframe>
+  </main>
+
+  <a href="{{ url_for('pagina') }}">Volver a la Página Principal</a>
+
   <script src="{{ url_for('static', filename='js/loginscript.js') }}"></script>
 </body>
 </html>
