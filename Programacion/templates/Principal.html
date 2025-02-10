@@ -9,13 +9,9 @@
 <body>
     
   <header>
-   
-<h1>VytalGym</h1>
-    <div class="logo">
-
-    </div>
+    <h1>VytalGym</h1>
+    <div class="logo"></div>
     <nav>
-   
       <a href="{{ url_for('pagina') }}">Actividad</a>
       <a href="{{ url_for('fitness') }}">Fitness</a>
       <a href="{{ url_for('precios') }}">Servicios</a>
@@ -23,12 +19,22 @@
       <a href="{{ url_for('contacto') }}">Contacto</a>
     </nav>
     <div class="actions">
-      <button onclick="location.href='/login?mode=login';">Iniciar sesión</button>
-      <button onclick="location.href='/login?mode=register';">Registrarse</button>
+      {% if user %}
+        <!-- Si el usuario está autenticado, muestra la foto de perfil -->
+        <div class="profile">
+          <img src="{{ user['picture'] }}" alt="Foto de Perfil"
+               style="width:40px; height:40px; border-radius:50%; cursor:pointer;"
+               onclick="location.href='{{ url_for('profile') }}';">
+        </div>
+        <button onclick="location.href='{{ url_for('logout') }}';">Cerrar sesión</button>
+      {% else %}
+        <!-- Si el usuario NO está autenticado, muestra los botones de login -->
+        <button onclick="location.href='/login?mode=login';">Iniciar sesión</button>
+        <button onclick="location.href='/login?mode=register';">Registrarse</button>
+      {% endif %}
     </div>
-    
   </header>
-
+  
   <section class="hero">
     <div class="content">
       <h1>Bienvenido a nuestra página</h1>
