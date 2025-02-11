@@ -12,12 +12,12 @@ input {
 }
 
 body {
-  background-color: #f0f2f5;
+  background-color: rgb(97, 105, 101);
 }
 
 .wrapper {
   display: flex;
-  justify-content: center;
+  justify-content: center;            
   align-items: center;
   min-height: 100vh;
 }
@@ -26,7 +26,7 @@ body {
   position: relative;
   width: 1000px;
   height: 600px;
-  background-color: white;
+  background-color: whitesmoke;
   border-radius: 15px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -91,6 +91,9 @@ form.sign-in-form {
   grid-template-columns: 15% 85%;
   padding: 0 0.4rem;
   position: relative;
+  /* Añadir estos estilos para el borde */
+  border: 2px solid #000000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .input-field i {
@@ -99,6 +102,16 @@ form.sign-in-form {
   color: #acacac;
   transition: 0.5s;
   font-size: 1.1rem;
+}
+
+.input-field:hover {
+  border-color: #4CAF50;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.input-field:focus-within {
+  border-color: #4CAF50;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
 }
 
 .input-field input {
@@ -133,22 +146,25 @@ form.sign-in-form {
   justify-content: center;
   align-items: center;
   margin: 0 0.45rem;
-  color: #333;
+  color: #4CAF50;
   border-radius: 50%;
-  border: 1px solid #333;
+  border: 1px solid #4CAF50;
   text-decoration: none;
-  font-size: 1.1rem;
   transition: 0.3s;
 }
 
+.social-icon i {
+  font-size: 1.5rem;
+}
+
 .social-icon:hover {
-  color: #4481eb;
-  border-color: #4481eb;
+  background-color: #4CAF50;
+  color: white;
 }
 
 .btn {
   width: 150px;
-  background-color: #5995fd;
+  background-color: black;
   border: none;
   outline: none;
   height: 49px;
@@ -183,10 +199,11 @@ form.sign-in-form {
   top: -10%;
   right: 48%;
   transform: translateY(-50%);
-  background-image: linear-gradient(-45deg, #000080 0%, #00008B 100%);
+  background-image: linear-gradient(-45deg, #000000 0%, #000000 100%);
   transition: 1.8s ease-in-out;
   border-radius: 50%;
-  z-index: 6;
+  z-index: 0; 
+
 }
 
 .image {
@@ -281,6 +298,34 @@ form.sign-in-form {
   pointer-events: all;
 }
 
+/* Añade estos estilos al final de tu archivo CSS */
+.input-field {
+  position: relative;
+  z-index: 10;
+}
+
+.input-field input {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding-left: 15px;
+}
+
+.btn {
+  position: relative;
+  z-index: 10;
+}
+
+form {
+  position: relative;
+  z-index: 7;
+}
+
+.signin-signup {
+  z-index: 7;
+}
+
+
 @media (max-width: 870px) {
   .container {
     width: 90%;
@@ -353,6 +398,7 @@ form.sign-in-form {
     right: initial;
     top: initial;
     transition: 2s ease-in-out;
+
   }
 
   .container.sign-up-mode:before {
@@ -434,4 +480,8 @@ form.sign-in-form {
     border: 1px solid #333;
     text-decoration: none;
     transition: 0.3s;
+}
+
+.fab {
+  font-size: 24px;
 }
