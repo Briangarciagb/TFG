@@ -3,9 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<<<<<<< HEAD
     <!-- Font Awesome -->
     <script src="https://kit.fontawesome.com/64d58efce2.js" crossorigin="anonymous"></script>
     <!-- CSS del login -->
+=======
+    <script src="https://kit.fontawesome.com/64d58efce2.js" crossorigin="anonymous"></script>
+>>>>>>> 19e4f94af647a40259623da0ea72931727315237
     <link rel="stylesheet" href="{{ url_for('static', filename='css/loginstyle.css') }}">
     <title>Inicio de Sesión / Registro - VitalGym</title>
   </head>
@@ -28,12 +32,19 @@
               <input type="submit" value="Iniciar Sesión" class="btn solid">
               <p class="social-text">O inicia sesión con tu cuenta de Google</p>
               <div class="social-media">
+<<<<<<< HEAD
                 <a href="{{ url_for('autorizar') }}" class="social-icon google">
                   <img src="google.jpg" alt="Google" class="social-img">
                   <div id="googleSignInButton"></div>
 
                 </a>
               </div>
+=======
+                <a href="https://accounts.google.com/signin" class="social-icon">
+                    <i class="fab fa-google" style="font-size: 24px;"></i>
+                </a>
+            </div>                   
+>>>>>>> 19e4f94af647a40259623da0ea72931727315237
             </form>
             <!-- Formulario de Registro -->
             <form action="/register" method="post" class="sign-up-form">
@@ -53,10 +64,17 @@
               <input type="submit" value="Registrarse" class="btn">
               <p class="social-text">O regístrate con tu cuenta de Google</p>
               <div class="social-media">
+<<<<<<< HEAD
                 <a href="{{ url_for('autorizar') }}" class="social-icon google">
                   <img src="{{ url_for('static', filename='imagenes/google.png') }}" alt="Google" class="social-img">
                 </a>
               </div>
+=======
+                <a href="https://accounts.google.com/signin" class="social-icon">
+                    <i class="fab fa-google" style="font-size: 24px;"></i>
+                </a>
+            </div>                      
+>>>>>>> 19e4f94af647a40259623da0ea72931727315237
             </form>
           </div>
         </div>
