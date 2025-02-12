@@ -6,6 +6,9 @@ from calendar_api import agregar_evento
 from fitness import get_fitness_data, get_sleep_data
 from googleapiclient.discovery import build
 from datetime import datetime
+from flask import send_from_directory
+
+
 
 # 1) Calcular la ruta base (la carpeta "Programacion")
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -28,8 +31,14 @@ CORS(app)
 # Agregar carpetas adicionales al buscador de plantillas de Jinja2
 app.jinja_loader.searchpath.append(LOGIN_DIR)
 app.jinja_loader.searchpath.append(PROFILE_DIR)
+# ------------------------Rutas------------------------ #
+@app.route('/login/img/<path:filename>')
+def serve_login_images(filename):
+    return send_from_directory(os.path.join(LOGIN_DIR, 'img'), filename)
 
 # --------------------- Rutas de la aplicación --------------------- #
+
+
 
 @app.route('/login')
 def login():
