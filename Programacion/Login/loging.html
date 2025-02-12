@@ -1,96 +1,77 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<<<<<<< HEAD
-    <!-- Font Awesome -->
     <script src="https://kit.fontawesome.com/64d58efce2.js" crossorigin="anonymous"></script>
-    <!-- CSS del login -->
-=======
-    <script src="https://kit.fontawesome.com/64d58efce2.js" crossorigin="anonymous"></script>
->>>>>>> 19e4f94af647a40259623da0ea72931727315237
     <link rel="stylesheet" href="{{ url_for('static', filename='css/loginstyle.css') }}">
-    <title>Inicio de Sesión / Registro - VitalGym</title>
+
+    <title>Inicio de sesión y registrarse</title>
   </head>
   <body>
     <div class="wrapper">
       <div class="container">
         <div class="forms-container">
           <div class="signin-signup">
-            <!-- Formulario de Iniciar Sesión -->
-            <form action="/login" method="post" class="sign-in-form">
+            <form action="#" class="sign-in-form">
               <h2 class="title">Iniciar Sesión</h2>
               <div class="input-field">
                 <i class="fas fa-user"></i>
-                <input type="text" name="username" placeholder="Usuario" required>
+                <input type="text" placeholder="Usuario" />
               </div>
               <div class="input-field">
                 <i class="fas fa-lock"></i>
-                <input type="password" name="password" placeholder="Contraseña" required>
+                <input type="password" placeholder="Contraseña" />
               </div>
-              <input type="submit" value="Iniciar Sesión" class="btn solid">
+              <input type="submit" value="Iniciar Sesión" class="btn solid" />
               <p class="social-text">O inicia sesión con tu cuenta de Google</p>
               <div class="social-media">
-<<<<<<< HEAD
-                <a href="{{ url_for('autorizar') }}" class="social-icon google">
-                  <img src="google.jpg" alt="Google" class="social-img">
-                  <div id="googleSignInButton"></div>
-
+                <a href="{{ url_for('autorizar') }}" class="social-icon">
+                  <img src="{{ url_for('static', filename='imagenes/google.png') }}" alt="Google Logo" class="social-img" />
                 </a>
-              </div>
-=======
-                <a href="https://accounts.google.com/signin" class="social-icon">
-                    <i class="fab fa-google" style="font-size: 24px;"></i>
-                </a>
-            </div>                   
->>>>>>> 19e4f94af647a40259623da0ea72931727315237
+              </div>                   
             </form>
-            <!-- Formulario de Registro -->
-            <form action="/register" method="post" class="sign-up-form">
+            <form action="#" class="sign-up-form">
               <h2 class="title">Registrarse</h2>
               <div class="input-field">
                 <i class="fas fa-user"></i>
-                <input type="text" name="username" placeholder="Usuario" required>
+                <input type="text" placeholder="Usuario" />
               </div>
               <div class="input-field">
                 <i class="fas fa-envelope"></i>
-                <input type="email" name="email" placeholder="Email" required>
+                <input type="email" placeholder="Email" />
               </div>
               <div class="input-field">
                 <i class="fas fa-lock"></i>
-                <input type="password" name="password" placeholder="Contraseña" required>
+                <input type="password" placeholder="Contraseña" />
               </div>
-              <input type="submit" value="Registrarse" class="btn">
+              <input type="submit" class="btn" value="Registrarse" />
               <p class="social-text">O regístrate con tu cuenta de Google</p>
               <div class="social-media">
-<<<<<<< HEAD
-                <a href="{{ url_for('autorizar') }}" class="social-icon google">
-                  <img src="{{ url_for('static', filename='imagenes/google.png') }}" alt="Google" class="social-img">
+                <a href="{{ url_for('autorizar') }}" class="social-icon">
+                  <img src="{{ url_for('static', filename='imagenes/google.png') }}" alt="Google Logo" class="social-img" />
                 </a>
-              </div>
-=======
-                <a href="https://accounts.google.com/signin" class="social-icon">
-                    <i class="fab fa-google" style="font-size: 24px;"></i>
-                </a>
-            </div>                      
->>>>>>> 19e4f94af647a40259623da0ea72931727315237
+              </div>                      
             </form>
           </div>
         </div>
         <div class="panels-container">
           <div class="panel left-panel">
             <div class="content">
-              <h3>¿Eres nuevo?</h3>
-              <p>Regístrate para descubrir una experiencia única.</p>
-              <button class="btn transparent" id="sign-up-btn">Registrarse</button>
+              <h3>¿Uno de nosotros?</h3>
+              <p>Para mantenerte conectado, inicia sesión</p>
+              <button class="btn transparent" id="sign-up-btn">
+                Registrarse
+              </button>
             </div>
           </div>
           <div class="panel right-panel">
             <div class="content">
-              <h3>¿Ya tienes cuenta?</h3>
-              <p>Inicia sesión para continuar y disfrutar de nuestros servicios.</p>
-              <button class="btn transparent" id="sign-in-btn">Iniciar Sesión</button>
+              <h3>¿Eres nuevo?</h3>
+              <p>Introduce tus datos e inicia con nosotros</p>
+              <button class="btn transparent" id="sign-in-btn">
+                Iniciar Sesión
+              </button>
             </div>
           </div>
         </div>
