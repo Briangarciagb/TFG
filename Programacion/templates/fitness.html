@@ -28,10 +28,12 @@
       background: rgba(0, 10, 20, 0.95);
       color: #fff;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
-      position: sticky;
+      position: fixed;
       top: 0;
-      z-index: 1000;
+      left: 0;
+      right: 0;
       transition: transform 0.3s ease-in-out;
+      z-index: 1000;
     }
     
     header.hidden {
@@ -483,7 +485,7 @@
 <body>
   <!-- Nuevo Header con menú -->
   <header>
-    <h1>VytalGym</h1>
+    <h1><a href="{{ url_for('principal') }}" style="text-decoration: none; color: inherit;">VytalGym</a></h1>
     <div class="logo"></div>
     <nav>
       <a href="{{ url_for('pagina') }}">Actividad</a>
@@ -724,6 +726,25 @@
         }
       });
     });
+
+    document.addEventListener("DOMContentLoaded", function() {
+    let lastScrollTop = 0;
+    const header = document.querySelector("header");
+    
+    window.addEventListener("scroll", function() {
+        let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+        
+        if (currentScroll > lastScrollTop && currentScroll > header.offsetHeight) {
+            // Scroll hacia abajo
+            header.style.transform = "translateY(-100%)";
+        } else {
+            // Scroll hacia arriba
+            header.style.transform = "translateY(0)";
+        }
+        lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+    });
+});
+
   </script>
 </body>
 </html>

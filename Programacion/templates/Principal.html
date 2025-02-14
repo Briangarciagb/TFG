@@ -9,8 +9,7 @@
 <body>
     
   <header>
-    <h1>VytalGym</h1>
-    <div class="logo"></div>
+    <h1><a href="{{ url_for('principal') }}" style="text-decoration: none; color: inherit;">VytalGym</a></h1>
     <nav>
       <a href="{{ url_for('pagina') }}">Actividad</a>
       <a href="{{ url_for('fitness') }}">Fitness</a>
@@ -30,9 +29,13 @@
       {% else %}
         <!-- Si el usuario NO está autenticado, muestra los botones de login -->
         <button onclick="location.href='/login?mode=login';">Iniciar sesión</button>
-        <button onclick="location.href='/login?mode=register';">Registrarse</button>
+        <button class="config-btn" onclick="location.href='{{ url_for('configuracion') }}';">
+          <img src="../static/imagenes/gear-icon.png" alt="⚙️">
+          Configuración
+      </button>
       {% endif %}
     </div>
+    
   </header>
   
   <section class="hero">
@@ -183,7 +186,7 @@
   
   <section class="cta-section">
     <h2>¡Únete a nuestra comunidad hoy!</h2>
-    <p>Regístrate ahora y descubre los beneficios exclusivos de VitalGym.</p>
+    <p>Regístrate ahora y descubre los beneficios exclusivos de VytalGym.</p>
     <button>Únete ahora</button>
   </section>
   
