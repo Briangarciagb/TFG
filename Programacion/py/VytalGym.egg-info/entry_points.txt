@@ -1,0 +1,2 @@
+[console_scripts]
+VytalGym = app:main

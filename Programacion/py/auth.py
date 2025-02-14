@@ -3,6 +3,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from flask import session, url_for, redirect, request
+
 SCOPES = [
     'https://www.googleapis.com/auth/fitness.activity.read',
     'https://www.googleapis.com/auth/fitness.sleep.read',
@@ -12,8 +13,6 @@ SCOPES = [
     'https://www.googleapis.com/auth/userinfo.email',
     'openid'
 ]
-
-
 
 # Ruta absoluta al archivo credentials.json
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))  # Ruta base
@@ -34,7 +33,6 @@ def get_credentials():
             return None
         session['credentials'] = creds_to_dict(creds)  # Guarda credenciales en la sesión
     return creds
-
 
 def creds_to_dict(creds):
     return {
@@ -73,7 +71,7 @@ def oauth2callback():
         return "Error al obtener el token de Google: " + str(e), 400
 
     # Almacena las credenciales en la sesión para usarlas posteriormente
-    session['credentials'] = creds_to_dict(flow.credentials)
+    session['credentials'] = creds_to_dict(flow.credentials)  # <- AQUÍ ESTABA EL ERROR
     
     # Redirige a la página de perfil, donde se mostrarán los datos del usuario
     return redirect(url_for('profile'))
