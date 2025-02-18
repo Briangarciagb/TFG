@@ -48,4 +48,5 @@ TFG/
 │       ├── fitness.html             # Página de estadísticas fitness
 │       ├── Precios.html             # Sección de planes/precios
 │       └── Principal.html           # Página principal de la aplicación
+        └── salud.html               # Página reacionada con la salud
 └── README.md                        # Archivo de documentación del proyecto

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from flask import render_template, session
 import sys
 import os
 import threading
@@ -174,6 +175,16 @@ def configuracion():
 @app.route('/contacto')
 def contacto():
     return render_template('contacto.html')
+
+@app.route('/salud', methods=['GET'])
+def salud():
+    user = None
+    if 'user' in session:
+        user = session['user']
+    return render_template('salud.html', user=user)
+
+
+
 
 # --------------------------------------------------------------------
 #                Integración con APIs y Google OAuth
