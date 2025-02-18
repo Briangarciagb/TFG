@@ -9,45 +9,32 @@
 <body>
     
   <header>
-    <h1><a href="{{ url_for('principal') }}" style="text-decoration: none; color: inherit;">VytalGym</a></h1>
-    <nav>
+    <div class="header-left">
+      <h1><a href="{{ url_for('principal') }}" style="text-decoration: none; color: inherit;">VytalGym</a></h1>
+    </div>
+    <nav class="header-center">
       <a href="{{ url_for('pagina') }}">Actividad</a>
       <a href="{{ url_for('fitness') }}">Fitness</a>
       <a href="{{ url_for('precios') }}">Servicios</a>
       <a href="{{ url_for('alimentacion') }}">Alimentación</a>
       <a href="{{ url_for('contacto') }}">Contacto</a>
+    </nav>
+    <div class="header-right">
       {% if session.user %}
-        <!-- Se muestra la foto de perfil y un mensaje de bienvenida -->
         {% if session.user.foto %}
-          <img src="{{ session.user.foto }}" alt="Foto de {{ session.user.nombre }}" width="50">
+          <img src="{{ session.user.foto }}" alt="Foto de {{ session.user.nombre }}" class="profile-img"
+            {% if session.user.login_method == "local" %} style="cursor:pointer;" onclick="location.href='{{ url_for('configurar_foto') }}';" {% endif %}>
         {% else %}
           <span>{{ session.user.nombre }}</span>
+          {% if session.user.login_method == "local" %}
+            <button onclick="location.href='{{ url_for('configurar_foto') }}';">Subir foto de perfil</button>
+          {% endif %}
         {% endif %}
-        <a href="{{ url_for('logout') }}">Cerrar sesión</a>
+        <!-- Cerrar sesión link removido aquí -->
       {% else %}
-        <!-- Se muestra el botón de iniciar sesión si no hay usuario logueado -->
         <a href="{{ url_for('login') }}" class="btn">Iniciar Sesión</a>
       {% endif %}
-    </nav>
-    <div class="actions">
-      {% if user %}
-        <!-- Si el usuario está autenticado, muestra la foto de perfil -->
-        <div class="profile">
-          <img src="{{ user['picture'] }}" alt="Foto de Perfil"
-               style="width:40px; height:40px; border-radius:50%; cursor:pointer;"
-               onclick="location.href='{{ url_for('principal') }}';">
-        </div>
-        <button onclick="location.href='{{ url_for('logout') }}';">Cerrar sesión</button>
-      {% else %}
-        <!-- Si el usuario NO está autenticado, muestra los botones de login -->
-        <button onclick="location.href='/login?mode=login';">Iniciar sesión</button>
-        <button class="config-btn" onclick="location.href='{{ url_for('configuracion') }}';">
-          <img src="../static/imagenes/gear-icon.png" alt="⚙️">
-          Configuración
-      </button>
-      {% endif %}
     </div>
-    
   </header>
   
   <section class="hero">

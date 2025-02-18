@@ -39,7 +39,8 @@ if not firebase_admin._apps:
     try:
         cred = credentials.Certificate(CREDENTIALS_PATH)
         firebase_admin.initialize_app(cred, {
-            'databaseURL': 'https://vytalgym-default-rtdb.europe-west1.firebasedatabase.app/'
+            'databaseURL': 'https://vytalgym-default-rtdb.europe-west1.firebasedatabase.app/',
+            'storageBucket': 'vytalgym.appspot.com'  # Usa el bucket correcto sin "gs://"
         })
         database = rtdb.reference("/")
         # Intenta obtener algún dato para confirmar la conexión
@@ -47,9 +48,7 @@ if not firebase_admin._apps:
         print("🔥 Realtime Database inicializado correctamente.")
         print("Valor obtenido en la raíz de la BD:", test_value)
     except Exception as e:
-        import traceback
-        print("⚠️ Error al inicializar Firebase Realtime Database:")
-        traceback.print_exc()
+        print("⚠️ Error al inicializar Firebase:", e)
         database = None
 else:
     database = rtdb.reference("/")
@@ -80,33 +79,23 @@ def principal():
 
 @app.route('/login')
 def login():
-    # Renderiza la plantilla de login
     return render_template('login.html')
 
 @app.route('/login/img/<path:filename>')
 def serve_login_images(filename):
-    # Sirve imágenes de la carpeta Login/img
     return send_from_directory(os.path.join(LOGIN_DIR, 'img'), filename)
-
-# Eliminar la ruta /profile para usar directamente la página principal:
-# @app.route('/profile')
-# def profile():
-#     return redirect(url_for('principal'))
 
 @app.route('/logout')
 def logout():
     session.pop("user", None)
     return redirect(url_for('login'))
 
-# Definición de rutas en Flask
 @app.route('/ruta_post', methods=['POST'])
 def ruta_post():
-    # Código para manejar la solicitud POST
     return "Solicitud POST recibida"
 
 @app.route('/ruta_get', methods=['GET'])
 def ruta_get():
-    # Código para manejar la solicitud GET
     return "Solicitud GET recibida"
 
 # --------------------------------------------------------------------
@@ -123,9 +112,8 @@ def registrar_usuario():
     password = data.get('password')
 
     if not email or not nombre or not password:
-        return "❌ Todos los campos son obligatorios.", 400
+        return "❌ Debes ingresar todos los campos obligatorios.", 400
 
-    # Reemplazamos '.' por '_' para la key en Realtime Database
     email_key = email.replace('.', '_')
     usuario_ref = database.child("usuarios").child(email_key)
     usuario_data = usuario_ref.get()
@@ -137,7 +125,8 @@ def registrar_usuario():
     usuario_ref.set({
         "nombre": nombre,
         "email": email,
-        "password": hashed_password
+        "password": hashed_password,
+        "foto": "https://via.placeholder.com/50"  # Foto predeterminada
     })
 
     return redirect(url_for('login'))
@@ -161,15 +150,13 @@ def iniciar_sesion():
     if not usuario_data:
         return "❌ Usuario no encontrado.", 404
 
-    # Verificamos la contraseña con Bcrypt
     if bcrypt.check_password_hash(usuario_data["password"], password):
-        # Agregamos la foto (si está guardada) en la sesión
         session["user"] = {
             "nombre": usuario_data["nombre"],
             "email": usuario_data["email"],
-            "foto": usuario_data.get("foto", "")
+            "foto": usuario_data.get("foto", ""),
+            "login_method": "local"
         }
-        # Redirigimos a la página principal en lugar de a 'profile'
         return redirect(url_for('principal'))
     else:
         return "❌ Contraseña incorrecta.", 401
@@ -201,6 +188,10 @@ def configuracion():
 def contacto():
     return render_template('contacto.html')
 
+@app.route('/ajustes')
+def ajustes():
+    return render_template('ajustes.html')
+
 # --------------------------------------------------------------------
 #             Integración con APIs y Google OAuth
 # --------------------------------------------------------------------
@@ -217,14 +208,47 @@ def callback():
     return oauth2callback()
 
 # --------------------------------------------------------------------
+@app.route('/configurar_foto')
+def configurar_foto():
+    return render_template('configurar_foto.html')
+
+from werkzeug.utils import secure_filename
+import firebase_admin.storage
+
+@app.route('/subir_foto', methods=['POST'])
+def subir_foto():
+    print(">>> Ruta /subir_foto llamada")
+    if "user" not in session:
+        return redirect(url_for('principal'))
+    file = request.files.get('foto')
+    if file:
+        print(f">>> Archivo recibido: {file.filename}")
+        filename = secure_filename(file.filename)
+        email_key = session["user"]["email"].replace('.', '_')
+        bucket_name = "vytalgym.appspot.com"  # <-- Actualiza con el bucket correcto
+        bucket = firebase_admin.storage.bucket(bucket_name)
+        blob = bucket.blob(f"fotos/{email_key}/{filename}")
+        try:
+            blob.upload_from_file(file, content_type=file.content_type)
+        except Exception as e:
+            print("Error al subir la foto:", e)
+        try:
+            blob.make_public()
+        except Exception as e:
+            print("Error al hacer la foto pública:", e)
+        nueva_url = blob.public_url
+        rtdb.reference("usuarios").child(email_key).update({"foto": nueva_url})
+        session["user"]["foto"] = nueva_url
+    else:
+        print(">>> No se recibió archivo.")
+    return redirect(url_for('principal'))
+
+# --------------------------------------------------------------------
 #           Variables y funciones para el servidor en 2º plano
 # --------------------------------------------------------------------
 server_thread = None
 
 def iniciar_servidor_en_segundo_plano():
-    """
-    Inicia Flask en un thread (daemon) para no bloquear la CLI principal.
-    """
     global server_thread
     if server_thread and server_thread.is_alive():
         print("⚠️ El servidor Flask ya está corriendo.\n")
@@ -236,14 +260,10 @@ def iniciar_servidor_en_segundo_plano():
         daemon=True
     )
     server_thread.start()
-
     time.sleep(2)
     print("   Accede a http://127.0.0.1:5000/ para ver la aplicación.\n")
 
 def submenu_servidor():
-    """
-    Submenú que aparece después de iniciar el servidor.
-    """
     while True:
         choice = questionary.select(
             "El servidor Flask está corriendo en segundo plano. ¿Qué deseas hacer ahora?",
@@ -291,17 +311,12 @@ def vincular_google():
     print("✅ Vinculación con Google completada (ejemplo).\n")
 
 def menu_principal():
-    """
-    Menú principal con Questionary (checkbox).
-    Selecciona múltiples tareas y las ejecuta secuencialmente.
-    """
     opciones = [
         questionary.Choice(title="🚀 Iniciar servidor", value="iniciar_servidor"),
         questionary.Choice(title="🔥 Iniciar Firebase", value="firebase_init"),
         questionary.Choice(title="🌐 Vincular la página con Google (OAuth)", value="vincular_google"),
         questionary.Choice(title="❌ Salir", value="salir"),
     ]
-
     seleccionadas = questionary.checkbox(
         "¿Qué deseas hacer?\n(Flechas ↑↓ para moverte, Espacio para seleccionar, Enter para continuar):",
         choices=opciones
@@ -310,26 +325,19 @@ def menu_principal():
     return seleccionadas or []
 
 def ejecutar_configuracion(opciones_seleccionadas):
-    """
-    Procesa las opciones seleccionadas en orden.
-    """
     if not opciones_seleccionadas:
         print("No se ha seleccionado ninguna opción. Finalizando...\n")
         return
 
     print("Procesando las opciones seleccionadas...\n")
-
     for opcion in opciones_seleccionadas:
         if opcion == "iniciar_servidor":
             iniciar_servidor_en_segundo_plano()
             submenu_servidor()
-
         elif opcion == "firebase_init":
             iniciar_firebase()
-
         elif opcion == "vincular_google":
             vincular_google()
-
         elif opcion == "salir":
             print("Saliendo del asistente...")
             sys.exit(0)
@@ -337,9 +345,6 @@ def ejecutar_configuracion(opciones_seleccionadas):
     print("¡Operaciones completadas!\n")
 
 def iniciar_asistente():
-    """
-    Bucle principal: muestra banner, menú, ejecuta opciones, repite.
-    """
     while True:
         mostrar_banner()
         opciones = menu_principal()

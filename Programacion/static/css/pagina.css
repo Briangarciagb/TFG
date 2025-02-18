@@ -34,6 +34,7 @@ body {
   header nav {
     display: flex;
     gap: 1.5rem;
+    justify-content: center;
   }
   
   header nav a {
@@ -87,6 +88,38 @@ body {
 .actions button.config-btn img {
     width: 16px;
     height: 16px;
+}
+
+/* Estilo para la foto de perfil */
+.profile-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+/* Contenedor para alinear la imagen y el nombre */
+.header-user {
+    display: flex;
+    align-items: center;
+}
+
+/* Ajusta márgenes y padding si es necesario */
+.header-user span {
+    font-size: 1rem;
+}
+
+.header-center {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
   

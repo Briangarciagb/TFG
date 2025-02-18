@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Configurar Foto de Perfil</title>
+  <link rel="stylesheet" href="../static/css/pagina.css">
+</head>
+<body>
+  <header>
+    <h1>Subir foto de perfil</h1>
+    <a href="{{ url_for('logout') }}">Cerrar sesión</a>
+    <a href="{{ url_for('fitness') }}">Ajustes</a>
+  </header>
+  <main>
+    <form action="{{ url_for('subir_foto') }}" method="POST" enctype="multipart/form-data">
+      <label for="foto">Elige tu foto:</label>
+      <input type="file" name="foto" id="foto" required>
+      <button type="submit">Subir foto</button>
+    </form>
+    <button onclick="location.href='{{ url_for('principal') }}';">Volver a la página principal</button>
+  </main>
+</body>
+</html>

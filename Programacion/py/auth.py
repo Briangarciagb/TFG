@@ -1,7 +1,6 @@
 import os
 import firebase_admin
 from firebase_admin import db as rtdb
-from firebase_admin import credentials  # <-- Agregado si es necesario para manejo dinámico
 
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -23,11 +22,11 @@ SCOPES = [
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 CREDENTIALS_PATH = os.path.join(BASE_DIR, 'claves seguras', 'google_oauth_credentials.json')
 
-# Eliminamos la asignación global de "database"
-# if firebase_admin._apps:
-#     database = rtdb.reference("/")
-# else:
-#     database = None
+# Asegurarnos de tener referencia a la Realtime Database
+if firebase_admin._apps:
+    database = rtdb.reference("/")
+else:
+    database = None
 
 def get_credentials():
     """
@@ -106,24 +105,19 @@ def oauth2callback():
     except ValueError as e:
         return f"Error al verificar el ID Token: {str(e)}", 400
 
+    # user_info tiene campos como 'email', 'name', 'picture', 'sub'
     email = user_info.get("email")
     nombre = user_info.get("name", "")
     foto = user_info.get("picture", "")
 
-    # Se obtiene dinámicamente la referencia a la RTDB, considerando que Firebase ya fue inicializado.
-    try:
-        fb_app = firebase_admin.get_app()
-        database_ref = rtdb.reference("/", app=fb_app)
-    except ValueError:
-        database_ref = None
-
     # Registramos o actualizamos en Realtime Database
-    if database_ref is not None and email:
+    if database is not None and email:
         email_key = email.replace('.', '_')
-        usuario_ref = database_ref.child("usuarios").child(email_key)
+        usuario_ref = database.child("usuarios").child(email_key)
         usuario_data = usuario_ref.get()
 
         if not usuario_data:
+            # Si no existe, lo creamos
             usuario_ref.set({
                 "nombre": nombre,
                 "email": email,
@@ -131,15 +125,17 @@ def oauth2callback():
                 "creado_via": "google_oauth"
             })
         else:
+            # Si existe, actualizamos info
             usuario_ref.update({
                 "nombre": nombre,
                 "foto": foto
             })
 
+    # Guardamos la info del usuario en la sesión
     session["user"] = {
         "nombre": nombre,
         "email": email,
         "foto": foto
     }
-    # Redireccionar a la página principal en lugar de 'profile'
-    return redirect(url_for('principal'))
+
+    return redirect(url_for('profile'))
