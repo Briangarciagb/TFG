@@ -3,41 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VitalGym</title>
+  <title>Página principal</title>
   <link rel="stylesheet" href="../static/css/pagina.css">
 </head>
 <body>
     
   <header>
-    <h1>VytalGym</h1>
-    <div class="logo"></div>
-    <nav>
+    <div class="header-left">
+      <h1><a href="{{ url_for('principal') }}" style="text-decoration: none; color: inherit;">VytalGym</a></h1>
+    </div>
+    <nav class="header-center">
       <a href="{{ url_for('pagina') }}">Actividad</a>
       <a href="{{ url_for('fitness') }}">Fitness</a>
       <a href="{{ url_for('precios') }}">Servicios</a>
       <a href="{{ url_for('alimentacion') }}">Alimentación</a>
       <a href="{{ url_for('contacto') }}">Contacto</a>
     </nav>
-    <div class="actions">
-      {% if user %}
-        <!-- Si el usuario está autenticado, muestra la foto de perfil -->
-        <div class="profile">
-          <img src="{{ user['picture'] }}" alt="Foto de Perfil"
-               style="width:40px; height:40px; border-radius:50%; cursor:pointer;"
-               onclick="location.href='{{ url_for('profile') }}';">
-        </div>
-        <button onclick="location.href='{{ url_for('logout') }}';">Cerrar sesión</button>
+    <div class="header-right">
+      {% if session.user %}
+        {% if session.user.foto %}
+          <img src="{{ session.user.foto }}" alt="Foto de {{ session.user.nombre }}" class="profile-img"
+            {% if session.user.login_method == "local" %} style="cursor:pointer;" onclick="location.href='{{ url_for('configurar_foto') }}';" {% endif %}>
+        {% else %}
+          <span>{{ session.user.nombre }}</span>
+          {% if session.user.login_method == "local" %}
+            <button onclick="location.href='{{ url_for('configurar_foto') }}';">Subir foto de perfil</button>
+          {% endif %}
+        {% endif %}
       {% else %}
-        <!-- Si el usuario NO está autenticado, muestra los botones de login -->
-        <button onclick="location.href='/login?mode=login';">Iniciar sesión</button>
-        <button onclick="location.href='/login?mode=register';">Registrarse</button>
+        <a href="{{ url_for('login') }}" class="btn">Iniciar Sesión</a>
       {% endif %}
     </div>
   </header>
   
   <section class="hero">
     <div class="content">
-      <h1>Bienvenido a nuestra página</h1>
+      <!-- Modificamos el título para incluir el nombre del usuario -->
+      <h1>Bienvenido a nuestra página {% if session.user %}{{ session.user.nombre }}{% else %}Invitado{% endif %}</h1>
       <p>Metabolic Exercise and Nutrition</p>
       <button>Ver Actividad</button>
     </div>
@@ -183,7 +185,7 @@
   
   <section class="cta-section">
     <h2>¡Únete a nuestra comunidad hoy!</h2>
-    <p>Regístrate ahora y descubre los beneficios exclusivos de VitalGym.</p>
+    <p>Regístrate ahora y descubre los beneficios exclusivos de VytalGym.</p>
     <button>Únete ahora</button>
   </section>
   

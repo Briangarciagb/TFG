@@ -19,6 +19,46 @@
       scroll-behavior: smooth;
     }
     
+    .titulo-seccion {
+    background-color: #001a33;
+    color: white;
+    padding: 1.5rem 2rem;  /* Aumenta el padding */
+    margin-top: 60px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 40px;  /* Añade espacio después del título */
+}
+
+    .titulo-seccion h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+
+    .titulo-seccion p {
+      margin: 0.5rem 0 0 0;
+      color: #bbbbbb;
+      font-size: 1rem;
+    }
+
+    /* Ajusta el main-content */
+    .main-content {
+      margin-top: 40px;
+      padding: 20px 40px;
+    }
+
+    .date-selector,
+    .stats-section,
+    .chart-section,
+    .exercises-section,
+    .news-section,
+    .live-data-section {
+        margin-bottom: 40px;  /* Aumenta el espacio entre secciones */
+        background: #fff;
+        border-radius: 8px;
+        padding: 30px;  /* Aumenta el padding interno */
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+
     /* Header (nuevo menú) */
     header {
       display: flex;
@@ -28,10 +68,12 @@
       background: rgba(0, 10, 20, 0.95);
       color: #fff;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
-      position: sticky;
+      position: fixed;
       top: 0;
-      z-index: 1000;
+      left: 0;
+      right: 0;
       transition: transform 0.3s ease-in-out;
+      z-index: 1000;
     }
     
     header.hidden {
@@ -50,6 +92,29 @@
       transition: color 0.3s ease;
     }
     
+    .actions button.config-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #FFB800;
+    color: black;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: 500;
+    }
+
+    .actions button.config-btn:hover {
+    background-color: #e6a600;
+    }
+
+    .actions button.config-btn img {
+    width: 16px;
+    height: 16px;
+    }
+
+
     header nav a:hover {
       color: #58a058;
     }
@@ -483,7 +548,7 @@
 <body>
   <!-- Nuevo Header con menú -->
   <header>
-    <h1>VytalGym</h1>
+    <h1><a href="{{ url_for('principal') }}" style="text-decoration: none; color: inherit;">VytalGym</a></h1>
     <div class="logo"></div>
     <nav>
       <a href="{{ url_for('pagina') }}">Actividad</a>
@@ -494,26 +559,31 @@
     </nav>
     <div class="actions">
       {% if user %}
-        <!-- Si el usuario está autenticado, se muestra la foto de perfil -->
-        <div class="profile">
-          <img src="{{ user['picture'] }}" alt="Foto de Perfil" style="width:40px; height:40px; border-radius:50%; cursor:pointer;" onclick="location.href='{{ url_for('profile') }}';">
-        </div>
-        <button onclick="location.href='{{ url_for('logout') }}';">Cerrar sesión</button>
+          <!-- Si el usuario está autenticado, muestra la foto de perfil -->
+          <div class="profile">
+              <img src="{{ user['picture'] }}" alt="Foto de Perfil"
+                   style="width:40px; height:40px; border-radius:50%; cursor:pointer;"
+                   onclick="location.href='{{ url_for('profile') }}';">
+          </div>
+          <button onclick="location.href='{{ url_for('logout') }}';">Cerrar sesión</button>
       {% else %}
-        <!-- Si el usuario NO está autenticado, se muestran los botones de login -->
-        <button onclick="location.href='/login?mode=login';">Iniciar sesión</button>
-        <button onclick="location.href='/login?mode=register';">Registrarse</button>
+          <!-- Si el usuario NO está autenticado, muestra los botones de login -->
+          <button onclick="location.href='/login?mode=login';">Iniciar sesión</button>
+          <button class="config-btn" onclick="location.href='{{ url_for('configuracion') }}';">
+              <img src="../static/imagenes/gear-icon.png" alt="⚙️">
+              Configuración
+          </button>
       {% endif %}
-    </div>
+  </div>
   </header>
   
   <!-- Contenedor principal de la página -->
   <div class="main-content">
     <!-- Banner de Fitness -->
-    <div class="fitness-banner">
+    <div class="titulo-seccion">
       <h1>Zona Fitness</h1>
       <p>Bienvenido a tu panel de Fitness más avanzado. Elige una fecha para ver tus datos de pasos, calorías, distancia y sueño.</p>
-    </div>
+  </div>
     
     <!-- Selector de fecha -->
     <div class="date-selector">
@@ -724,6 +794,25 @@
         }
       });
     });
+
+    document.addEventListener("DOMContentLoaded", function() {
+    let lastScrollTop = 0;
+    const header = document.querySelector("header");
+    
+    window.addEventListener("scroll", function() {
+        let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+        
+        if (currentScroll > lastScrollTop && currentScroll > header.offsetHeight) {
+            // Scroll hacia abajo
+            header.style.transform = "translateY(-100%)";
+        } else {
+            // Scroll hacia arriba
+            header.style.transform = "translateY(0)";
+        }
+        lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+    });
+});
+
   </script>
 </body>
 </html>

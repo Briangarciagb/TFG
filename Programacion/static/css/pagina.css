@@ -34,6 +34,7 @@ body {
   header nav {
     display: flex;
     gap: 1.5rem;
+    justify-content: center;
   }
   
   header nav a {
@@ -66,6 +67,61 @@ body {
   header .actions button:hover {
     background-color: #58a058;
   }
+
+  .actions button.config-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #FFB800;
+    color: black;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.actions button.config-btn:hover {
+    background-color: #e6a600;
+}
+
+.actions button.config-btn img {
+    width: 16px;
+    height: 16px;
+}
+
+/* Estilo para la foto de perfil */
+.profile-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+/* Contenedor para alinear la imagen y el nombre */
+.header-user {
+    display: flex;
+    align-items: center;
+}
+
+/* Ajusta márgenes y padding si es necesario */
+.header-user span {
+    font-size: 1rem;
+}
+
+.header-center {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
   
   /* Hero Section */
   .hero {
