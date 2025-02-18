@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Perfil de Usuario</title>
+    <!-- Agrega aquí tus estilos o links a CSS -->
+  </head>
+  <body>
+    <h1>Bienvenido, {{ user.nombre }}</h1>
+    {% if user.foto %}
+      <img src="{{ user.foto }}" alt="Foto de {{ user.nombre }}" width="150">
+    {% else %}
+      <p>No hay foto disponible.</p>
+    {% endif %}
+    <p>Email: {{ user.email }}</p>
+    <a href="{{ url_for('logout') }}">Cerrar sesión</a>
+  </body>
+</html>
