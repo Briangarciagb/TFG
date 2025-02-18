@@ -89,11 +89,10 @@ def serve_login_images(filename):
     # Sirve imágenes de la carpeta Login/img
     return send_from_directory(os.path.join(LOGIN_DIR, 'img'), filename)
 
-@app.route('/profile')
-def profile():
-    if "user" not in session:
-        return redirect(url_for('login'))
-    return render_template('profile.html', user=session["user"])
+# Eliminar la ruta /profile para usar directamente la página principal:
+# @app.route('/profile')
+# def profile():
+#     return redirect(url_for('principal'))
 
 @app.route('/logout')
 def logout():
@@ -165,11 +164,14 @@ def iniciar_sesion():
 
     # Verificamos la contraseña con Bcrypt
     if bcrypt.check_password_hash(usuario_data["password"], password):
+        # Agregamos la foto (si está guardada) en la sesión
         session["user"] = {
             "nombre": usuario_data["nombre"],
-            "email": usuario_data["email"]
+            "email": usuario_data["email"],
+            "foto": usuario_data.get("foto", "")
         }
-        return redirect(url_for('profile'))
+        # Redirigimos a la página principal en lugar de a 'profile'
+        return redirect(url_for('principal'))
     else:
         return "❌ Contraseña incorrecta.", 401
 
@@ -277,7 +279,7 @@ def mostrar_banner():
 <!-- * __  __           __             ___    ____                           * -->
 <!-- */\ \/\ \         /\ \__         /\_ \  /\  _`\                         * -->
 <!-- *\ \ \ \ \  __  __\ \ ,_\    __  \//\ \ \ \ \L\_\  __  __    ___ ___    * -->
-<!-- * \ \ \ \ \/\ \/\ \\ \ \/  /'__`\  \ \ \ \ \ \L_L /\ \/\ \ /' __` __`\  * -->
+<!-- * \ \ \ \/\ \/\ \\ \ \/  /'__`\  \ \ \ \ \ \L_L /\ \/\ \ /' __` __`\  * -->
 <!-- *  \ \ \_/ \ \ \_\ \\ \ \_/\ \L\.\_ \_\ \_\ \ \/, \ \ \_\ \/\ \/\ \/\ \ * -->
 <!-- *   \ `\___/\/`____ \\ \__\ \__/.\_\/\____\\ \____/\/`____ \ \_\ \_\ \_\* -->
 <!-- *    `\/__/  `/___/> \\/__/\/__/\/_/\/____/ \/___/  `/___/> \/_/\/_/\/_/* -->
