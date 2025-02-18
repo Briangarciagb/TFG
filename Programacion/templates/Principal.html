@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VitalGym</title>
+  <title>Página principal</title>
   <link rel="stylesheet" href="../static/css/pagina.css">
 </head>
 <body>
@@ -16,6 +16,18 @@
       <a href="{{ url_for('precios') }}">Servicios</a>
       <a href="{{ url_for('alimentacion') }}">Alimentación</a>
       <a href="{{ url_for('contacto') }}">Contacto</a>
+      {% if session.user %}
+        <!-- Se muestra la foto de perfil y un mensaje de bienvenida -->
+        {% if session.user.foto %}
+          <img src="{{ session.user.foto }}" alt="Foto de {{ session.user.nombre }}" width="50">
+        {% else %}
+          <span>{{ session.user.nombre }}</span>
+        {% endif %}
+        <a href="{{ url_for('logout') }}">Cerrar sesión</a>
+      {% else %}
+        <!-- Se muestra el botón de iniciar sesión si no hay usuario logueado -->
+        <a href="{{ url_for('login') }}" class="btn">Iniciar Sesión</a>
+      {% endif %}
     </nav>
     <div class="actions">
       {% if user %}
@@ -23,7 +35,7 @@
         <div class="profile">
           <img src="{{ user['picture'] }}" alt="Foto de Perfil"
                style="width:40px; height:40px; border-radius:50%; cursor:pointer;"
-               onclick="location.href='{{ url_for('profile') }}';">
+               onclick="location.href='{{ url_for('principal') }}';">
         </div>
         <button onclick="location.href='{{ url_for('logout') }}';">Cerrar sesión</button>
       {% else %}

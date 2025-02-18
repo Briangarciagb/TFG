@@ -141,5 +141,5 @@ def oauth2callback():
         "email": email,
         "foto": foto
     }
-
-    return redirect(url_for('profile'))
+    # Redireccionar a la página principal en lugar de 'profile'
+    return redirect(url_for('principal'))
