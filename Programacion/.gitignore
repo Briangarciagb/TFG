@@ -1,0 +1,7 @@
+# Ignorar todo el contenido de la carpeta "claves seguras"...
+claves seguras/*
+# ...excepto el propio .gitignore (para mantener la estructura de la carpeta)
+!claves seguras/.gitignore
+
+# Opcional: Ignores otros directorios sensibles
+Programacion/ID/

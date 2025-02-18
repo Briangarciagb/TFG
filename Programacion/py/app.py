@@ -8,40 +8,52 @@ import threading
 import time
 
 import firebase_admin
-from firebase_admin import credentials, firestore
-from flask import Flask, render_template, request, session, redirect, url_for
+from firebase_admin import credentials, db as rtdb  # Importación de firebase_admin y credentials
+from flask import Flask, render_template, request, session, redirect, url_for, send_from_directory
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 
-from auth import autorizar as google_autorizar, oauth2callback, get_credentials
+# Autenticación con Google (importa funciones de auth.py)
+from auth import autorizar as google_autorizar, oauth2callback
+
+# Otros imports (calendar_api, fitness, etc.)
 from calendar_api import agregar_evento
 from fitness import get_fitness_data, get_sleep_data
 from googleapiclient.discovery import build
 from datetime import datetime
-from flask import send_from_directory
 
-
-
-# --- IMPORTAMOS QUESTIONARY PARA EL MENÚ CON FLECHAS ---
+# Menú en consola
 import questionary
 
 # --------------------------------------------------------------------
 #                      Configuración de Firebase
 # --------------------------------------------------------------------
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-CREDENTIALS_PATH = os.path.join(BASE_DIR, "claves seguras", "credentials.json")
+CREDENTIALS_PATH = os.path.join(BASE_DIR, "claves seguras", "firebase_admin_credentials.json")
+
+# Inicializamos la app de Firebase con Realtime Database
+if not os.path.exists(CREDENTIALS_PATH):
+    print("⚠️ Error: El archivo de credenciales no existe en la ruta:", CREDENTIALS_PATH)
+    sys.exit(1)
 
 if not firebase_admin._apps:
     try:
         cred = credentials.Certificate(CREDENTIALS_PATH)
-        firebase_admin.initialize_app(cred)
-        db = firestore.client()
-        print("🔥 Firebase inicializado correctamente.")
+        firebase_admin.initialize_app(cred, {
+            'databaseURL': 'https://vytalgym-default-rtdb.europe-west1.firebasedatabase.app/'
+        })
+        database = rtdb.reference("/")
+        # Intenta obtener algún dato para confirmar la conexión
+        test_value = database.get()
+        print("🔥 Realtime Database inicializado correctamente.")
+        print("Valor obtenido en la raíz de la BD:", test_value)
     except Exception as e:
-        print("⚠️ Error al inicializar Firebase:", e)
-        db = None
+        import traceback
+        print("⚠️ Error al inicializar Firebase Realtime Database:")
+        traceback.print_exc()
+        database = None
 else:
-    db = firestore.client()
+    database = rtdb.reference("/")
 
 # --------------------------------------------------------------------
 #                      Configuración de Flask
@@ -52,17 +64,13 @@ LOGIN_DIR = os.path.join(BASE_DIR, 'Login')
 PROFILE_DIR = os.path.join(BASE_DIR, 'profile')
 
 app = Flask(__name__, template_folder=TEMPLATES_DIR, static_folder=STATIC_DIR)
-app.secret_key = "clave_secreta_segura"
+app.secret_key = "clave_secreta_segura"  # Cámbiala por una clave segura real
 CORS(app)
 bcrypt = Bcrypt(app)
 
 # Agregamos rutas de búsqueda de plantillas
 app.jinja_loader.searchpath.append(LOGIN_DIR)
 app.jinja_loader.searchpath.append(PROFILE_DIR)
-# ------------------------Rutas------------------------ #
-@app.route('/login/img/<path:filename>')
-def serve_login_images(filename):
-    return send_from_directory(os.path.join(LOGIN_DIR, 'img'), filename)
 
 # --------------------------------------------------------------------
 #                      Rutas de la Aplicación
@@ -71,11 +79,15 @@ def serve_login_images(filename):
 def principal():
     return render_template('Principal.html')
 
-
-
 @app.route('/login')
 def login():
+    # Renderiza la plantilla de login
     return render_template('login.html')
+
+@app.route('/login/img/<path:filename>')
+def serve_login_images(filename):
+    # Sirve imágenes de la carpeta Login/img
+    return send_from_directory(os.path.join(LOGIN_DIR, 'img'), filename)
 
 @app.route('/profile')
 def profile():
@@ -88,10 +100,24 @@ def logout():
     session.pop("user", None)
     return redirect(url_for('login'))
 
+# Definición de rutas en Flask
+@app.route('/ruta_post', methods=['POST'])
+def ruta_post():
+    # Código para manejar la solicitud POST
+    return "Solicitud POST recibida"
+
+@app.route('/ruta_get', methods=['GET'])
+def ruta_get():
+    # Código para manejar la solicitud GET
+    return "Solicitud GET recibida"
+
+# --------------------------------------------------------------------
+#                      Rutas para Registro/Login (local)
+# --------------------------------------------------------------------
 @app.route('/registrar_usuario', methods=['POST'])
 def registrar_usuario():
-    if db is None:
-        return "No se pudo conectar a Firebase", 500
+    if database is None:
+        return "No se pudo conectar a Realtime Database", 500
 
     data = request.form
     email = data.get('email')
@@ -101,28 +127,27 @@ def registrar_usuario():
     if not email or not nombre or not password:
         return "❌ Todos los campos son obligatorios.", 400
 
-    usuario_ref = db.collection("usuarios").document(email)
+    # Reemplazamos '.' por '_' para la key en Realtime Database
+    email_key = email.replace('.', '_')
+    usuario_ref = database.child("usuarios").child(email_key)
+    usuario_data = usuario_ref.get()
 
-    try:
-        if usuario_ref.get().exists:
-            return "❌ El usuario ya está registrado.", 400
+    if usuario_data:
+        return "❌ El usuario ya está registrado.", 400
 
-        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-        usuario_ref.set({
-            "nombre": nombre,
-            "email": email,
-            "password": hashed_password
-        })
+    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+    usuario_ref.set({
+        "nombre": nombre,
+        "email": email,
+        "password": hashed_password
+    })
 
-        return redirect(url_for('login'))  # Redirige al login
-    except Exception as e:
-        print(f"⚠️ Error al registrar usuario: {e}")
-        return "Error al registrar usuario", 500
+    return redirect(url_for('login'))
 
 @app.route('/iniciar_sesion', methods=['POST'])
 def iniciar_sesion():
-    if db is None:
-        return "No se pudo conectar a Firebase", 500
+    if database is None:
+        return "No se pudo conectar a Realtime Database", 500
 
     data = request.form
     email = data.get('email')
@@ -131,31 +156,30 @@ def iniciar_sesion():
     if not email or not password:
         return "❌ Debes ingresar email y contraseña.", 400
 
-    usuario_ref = db.collection("usuarios").document(email)
-    usuario = usuario_ref.get()
+    email_key = email.replace('.', '_')
+    usuario_ref = database.child("usuarios").child(email_key)
+    usuario_data = usuario_ref.get()
 
-    try:
-        if usuario.exists:
-            usuario_data = usuario.to_dict()
-            if bcrypt.check_password_hash(usuario_data["password"], password):
-                session["user"] = {
-                    "nombre": usuario_data["nombre"],
-                    "email": usuario_data["email"]
-                }
-                return redirect(url_for('profile'))
-            else:
-                return "❌ Contraseña incorrecta.", 401
-        else:
-            return "❌ Usuario no encontrado.", 404
-    except Exception as e:
-        print(f"⚠️ Error en inicio de sesión: {e}")
-        return "Error en el inicio de sesión", 500
+    if not usuario_data:
+        return "❌ Usuario no encontrado.", 404
 
+    # Verificamos la contraseña con Bcrypt
+    if bcrypt.check_password_hash(usuario_data["password"], password):
+        session["user"] = {
+            "nombre": usuario_data["nombre"],
+            "email": usuario_data["email"]
+        }
+        return redirect(url_for('profile'))
+    else:
+        return "❌ Contraseña incorrecta.", 401
+
+# --------------------------------------------------------------------
+#          Rutas de otras páginas (ejemplos)
+# --------------------------------------------------------------------
 @app.route('/pagina')
 def pagina():
     return render_template('Pagina.html')
 
-# Ruta actualizada para Fitness: endpoint 'fitness'
 @app.route('/fitness')
 def fitness():
     return render_template('fitness.html')
@@ -187,7 +211,7 @@ def salud():
 
 
 # --------------------------------------------------------------------
-#                Integración con APIs y Google OAuth
+#             Integración con APIs y Google OAuth
 # --------------------------------------------------------------------
 @app.route('/agregar_evento', methods=['POST'])
 def evento():
@@ -209,7 +233,6 @@ server_thread = None
 def iniciar_servidor_en_segundo_plano():
     """
     Inicia Flask en un thread (daemon) para no bloquear la CLI principal.
-    Evitamos el error "signal only works in main thread" con use_reloader=False.
     """
     global server_thread
     if server_thread and server_thread.is_alive():
@@ -223,14 +246,12 @@ def iniciar_servidor_en_segundo_plano():
     )
     server_thread.start()
 
-    # Esperamos un momento a que arranque
     time.sleep(2)
     print("   Accede a http://127.0.0.1:5000/ para ver la aplicación.\n")
 
 def submenu_servidor():
     """
     Submenú que aparece después de iniciar el servidor.
-    Solo muestra 2 opciones: Volver al menú principal o Salir.
     """
     while True:
         choice = questionary.select(
@@ -300,7 +321,6 @@ def menu_principal():
 def ejecutar_configuracion(opciones_seleccionadas):
     """
     Procesa las opciones seleccionadas en orden.
-    Si se selecciona 'iniciar_servidor', lo lanzamos en 2º plano y mostramos el submenú.
     """
     if not opciones_seleccionadas:
         print("No se ha seleccionado ninguna opción. Finalizando...\n")
