@@ -30,7 +30,6 @@
             <button onclick="location.href='{{ url_for('configurar_foto') }}';">Subir foto de perfil</button>
           {% endif %}
         {% endif %}
-        <!-- Cerrar sesión link removido aquí -->
       {% else %}
         <a href="{{ url_for('login') }}" class="btn">Iniciar Sesión</a>
       {% endif %}
@@ -39,7 +38,8 @@
   
   <section class="hero">
     <div class="content">
-      <h1>Bienvenido a nuestra página</h1>
+      <!-- Modificamos el título para incluir el nombre del usuario -->
+      <h1>Bienvenido a nuestra página {% if session.user %}{{ session.user.nombre }}{% else %}Invitado{% endif %}</h1>
       <p>Metabolic Exercise and Nutrition</p>
       <button>Ver Actividad</button>
     </div>

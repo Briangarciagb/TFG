@@ -138,4 +138,5 @@ def oauth2callback():
         "foto": foto
     }
 
-    return redirect(url_for('profile'))
+    # Cambiado: Redirige a la página principal para mostrar la foto correctamente
+    return redirect(url_for('main.principal'))

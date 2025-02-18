@@ -15,6 +15,7 @@
     <form action="{{ url_for('subir_foto') }}" method="POST" enctype="multipart/form-data">
       <label for="foto">Elige tu foto:</label>
       <input type="file" name="foto" id="foto" required>
+      <!-- Asegúrate de tener type="submit" -->
       <button type="submit">Subir foto</button>
     </form>
     <button onclick="location.href='{{ url_for('principal') }}';">Volver a la página principal</button>
