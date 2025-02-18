@@ -32,7 +32,7 @@ body {
     background-color: #001a33;
     color: white;
     padding: 1rem 2rem;
-    margin-top: 30px; /* altura del header */
+    margin-top: 40px; /* altura del header */
     border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
@@ -127,7 +127,33 @@ body {
     height: 16px;
 }
 
-  
+  /* Sección de eventos de Google Calendar */
+  #google-calendar-container {
+      padding: 2rem;
+      background-color: rgba(0, 0, 0, 0);
+      text-align: center;
+    }
+    
+    #google-calendar-container h2 {
+      font-size: 2rem;
+      color: #58a058;
+      margin-bottom: 1rem;
+    }
+    
+    #events-list {
+      list-style: none;
+      padding: 0;
+    }
+    
+    #events-list li {
+      background-color: rgba(28, 40, 28, 0.9);
+      margin: 1rem auto;
+      padding: 1rem;
+      border-radius: 12px;
+      width: 80%;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+    }  
+
   /* Hero Section */
   .hero {
     display: flex;
@@ -422,27 +448,25 @@ body {
 <header>
   <h1><a href="{{ url_for('principal') }}" style="text-decoration: none; color: inherit;">VytalGym</a></h1>
   <nav>
-      <a href="{{ url_for('pagina') }}">Actividad</a>
-      <a href="{{ url_for('fitness') }}">Fitness</a>
-      <a href="{{ url_for('precios') }}">Servicios</a>
-      <a href="{{ url_for('alimentacion') }}">Alimentación</a>
-      <a href="{{ url_for('contacto') }}">Contacto</a>
+    <a href="{{ url_for('pagina') }}">Actividad</a>
+    <a href="{{ url_for('fitness') }}">Fitness</a>
+    <a href="{{ url_for('precios') }}">Servicios</a>
+    <a href="{{ url_for('alimentacion') }}">Alimentación</a>
+    <a href="{{ url_for('contacto') }}">Contacto</a>
   </nav>
   <div class="actions">
-      {% if user %}
-          <div class="profile">
-              <img src="{{ user['picture'] }}" alt="Foto de Perfil"
-                   style="width:40px; height:40px; border-radius:50%; cursor:pointer;"
-                   onclick="location.href='{{ url_for('profile') }}';">
-          </div>
-          <button onclick="location.href='{{ url_for('logout') }}';">Cerrar sesión</button>
-      {% else %}
-          <button onclick="location.href='/login?mode=login';">Iniciar sesión</button>
-          <button class="config-btn" onclick="location.href='{{ url_for('configuracion') }}';">
-              <img src="../static/imagenes/gear-icon.png" alt="⚙️">
-              Configuración
-          </button>
-      {% endif %}
+    {% if user %}
+      <div class="profile">
+        <img src="{{ user['picture'] }}" alt="Foto de Perfil" style="width:40px; height:40px; border-radius:50%; cursor:pointer;" onclick="location.href='{{ url_for('profile') }}';">
+      </div>
+      <button onclick="location.href='{{ url_for('logout') }}';">Cerrar sesión</button>
+    {% else %}
+      <button onclick="location.href='/login?mode=login';">Iniciar sesión</button>
+      <button class="config-btn" onclick="location.href='{{ url_for('configuracion') }}';">
+        <img src="../static/imagenes/gear-icon.png" alt="⚙️">
+        Configuración
+      </button>
+    {% endif %}
   </div>
 </header>
 
@@ -453,9 +477,7 @@ body {
   <p>Organiza tus menús, aprende sobre nutrición y recibe recomendaciones personalizadas.</p>
 </div>
 <div class="main-content">
-  <!-- HERO BANNER ALIMENTACION -->
-
-  <!-- TARJETAS MACRONUTRIENTES O CONSEJOS -->
+  <!-- HERO BANNER y tarjetas de macronutrientes -->
   <div class="macro-cards">
     <div class="macro-card">
       <h3>Proteínas</h3>
@@ -471,7 +493,7 @@ body {
     </div>
   </div>
 
-  <!-- SECCIÓN DE RECETAS -->
+  <!-- Sección de recetas -->
   <div class="recipes-section">
     <h2><i class="fas fa-utensils"></i> Recetas Destacadas</h2>
     <div class="recipe-list">
@@ -500,160 +522,67 @@ body {
   </div>
 
   <p style="line-height:1.6; margin-bottom:30px;">
-    Ajusta tus comidas según tus objetivos y deja que nuestra IA te sugiera planes semanales 
-    equilibrados. Explora más recetas y tips para convertir tu alimentación en un pilar de tu salud.
+    Ajusta tus comidas según tus objetivos y deja que nuestra IA te sugiera planes semanales equilibrados. Explora más recetas y tips para convertir tu alimentación en un pilar de tu salud.
   </p>
 
- <!-- CALENDARIO INTERACTIVO -->
- <div class="calendar-container">
-  <div class="calendar-header">
-    <div class="calendar-nav">
-      <button onclick="previousMonth()">&lt;</button>
-      <button onclick="nextMonth()">&gt;</button>
-    </div>
-    <h2 id="current-month">Mes Actual</h2>
-  </div>
-  <div class="calendar-grid" id="calendar-grid">
-    <!-- Los días se generan con JavaScript -->
+  <div id="google-calendar-container">
+    <h2>Mis Eventos de Google Calendar</h2>
+    <ul id="events-list">
+      <li>Cargando eventos...</li>
+    </ul>
   </div>
 </div>
 
-  <!-- MODAL MENÚ DIARIO -->
-  <div class="daily-menu" id="daily-menu">
-    <h3 id="menu-date">Menú del día</h3>
-    <div class="menu-content" id="menu-content">
-      <textarea rows="6" placeholder="Desayuno:\nComida:\nCena:\nSnacks..." 
-                style="width: 100%; padding: 10px;"></textarea>
-    </div>
-    <div class="menu-actions">
-      <button onclick="saveMenu()" class="config-btn">Guardar</button>
-      <button onclick="closeMenu()" class="config-btn">Cerrar</button>
-    </div>
-  </div>
-
-</div> <!-- fin main-content -->
-
 <script>
-  // Variables globales
-  let currentDate = new Date();
-  let selectedDate = null;
-  let menus = JSON.parse(localStorage.getItem('menus')) || {};
+function loadCalendarEvents() {
+    const eventsList = document.getElementById('events-list');
+    eventsList.innerHTML = '<li>Cargando eventos...</li>';
 
-  // Generar calendario
-  function generateCalendar() {
-    const calendarGrid = document.getElementById('calendar-grid');
-    const monthYear = document.getElementById('current-month');
-    
-    calendarGrid.innerHTML = '';
-    
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-    
-    monthYear.textContent = 
-      `${currentDate.toLocaleString('es', { month: 'long' })} ${year}`.toUpperCase();
+    fetch('/api/calendar/events')
+        .then(response => {
+            console.log('Respuesta del servidor:', response.status); // Debug
+            return response.json();
+        })
+        .then(data => {
+            console.log('Datos recibidos:', data); // Debug
+            if (data.status === "error") {
+                eventsList.innerHTML = `<li>Error: ${data.message}</li>`;
+                // Si necesita autorización, mostrar botón
+                const authButton = document.createElement('button');
+                authButton.textContent = 'Conectar con Google Calendar';
+                authButton.onclick = () => window.location.href = '/autorizar';
+                eventsList.appendChild(authButton);
+                return;
+            }
 
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    
-    for (let day = 1; day <= lastDay.getDate(); day++) {
-      const date = new Date(year, month, day);
-      const dayElement = document.createElement('div');
-      dayElement.className = 'calendar-day';
-      dayElement.innerHTML = `
-        <div class="day-number">${day}</div>
-        <div class="day-buttons">
-          <button class="random-menu" onclick="generateRandomMenu('${date.toISOString()}')">🎲</button>
-          <button onclick="showMenu('${date.toISOString()}')">+</button>
-        </div>
-        <div class="events">${getMenuPreview(date)}</div>
-      `;
-      dayElement.onclick = () => showMenu(date.toISOString());
-      calendarGrid.appendChild(dayElement);
-    }
-  }
+            eventsList.innerHTML = '';
+            if (data.events && data.events.length > 0) {
+                data.events.forEach(event => {
+                    const li = document.createElement('li');
+                    const date = new Date(event.start);
+                    li.innerHTML = `
+                        <strong>${event.summary}</strong><br>
+                        ${date.toLocaleString()}
+                    `;
+                    eventsList.appendChild(li);
+                });
+            } else {
+                eventsList.innerHTML = '<li>No hay eventos próximos</li>';
+            }
+        })
+        .catch(error => {
+            console.error('Error en la solicitud:', error); // Debug
+            eventsList.innerHTML = `
+                <li>Error al cargar los eventos</li>
+                <button onclick="window.location.href='/autorizar'">
+                    Conectar con Google Calendar
+                </button>
+            `;
+        });
+}
 
-  // Navegación meses
-  function previousMonth() {
-    currentDate.setMonth(currentDate.getMonth() - 1);
-    generateCalendar();
-  }
+// Llamar a la función cuando se carga la página
+document.addEventListener('DOMContentLoaded', loadCalendarEvents);
 
-  function nextMonth() {
-    currentDate.setMonth(currentDate.getMonth() + 1);
-    generateCalendar();
-  }
-
-  // Mostrar menú diario
-  function showMenu(dateString) {
-    selectedDate = new Date(dateString);
-    const menu = menus[dateString] || '';
-    
-    const menuModal = document.getElementById('daily-menu');
-    document.getElementById('menu-date').textContent = 
-      `Menú ${selectedDate.toLocaleDateString('es')}`;
-    
-    menuModal.querySelector('textarea').value = menu;
-    menuModal.classList.add('active');
-  }
-
-  // Guardar menú
-  function saveMenu() {
-    if (!selectedDate) return;
-    
-    const dateKey = selectedDate.toISOString();
-    menus[dateKey] = document.querySelector('#daily-menu textarea').value;
-    localStorage.setItem('menus', JSON.stringify(menus));
-    generateCalendar();
-    closeMenu();
-  }
-
-  // Cerrar menú
-  function closeMenu() {
-    document.getElementById('daily-menu').classList.remove('active');
-  }
-
-  // Generar menú aleatorio
-  function generateRandomMenu(dateString) {
-    const date = new Date(dateString);
-    const randomMenu = `Desayuno: Tostadas integrales con aguacate\nComida: Pollo a la plancha con verduras\nCena: Ensalada de quinoa con salmón`;
-    
-    menus[date.toISOString()] = randomMenu;
-    localStorage.setItem('menus', JSON.stringify(menus));
-    generateCalendar();
-  }
-
-  // Obtener vista previa del menú
-  function getMenuPreview(date) {
-    const menu = menus[date.toISOString()];
-    if (!menu) return '';
-    
-    return menu.split('\n')
-      .map(line => `<div class="menu-line">${line}</div>`)
-      .join('');
-  }
-
-  // Inicializar calendario
-  generateCalendar();
-
-  document.addEventListener("DOMContentLoaded", function() {
-    let lastScrollTop = 0;
-    const header = document.querySelector("header");
-    
-    window.addEventListener("scroll", function() {
-        let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-        
-        if (currentScroll > lastScrollTop && currentScroll > header.offsetHeight) {
-            // Scroll hacia abajo
-            header.style.transform = "translateY(-100%)";
-        } else {
-            // Scroll hacia arriba
-            header.style.transform = "translateY(0)";
-        }
-        lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
-    });
-});
 
 </script>
-
-</body>
-</html>
