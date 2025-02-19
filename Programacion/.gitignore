@@ -6,4 +6,4 @@ claves seguras/*
 # Opcional: Ignores otros directorios sensibles
 Programacion/ID/
 
-Programacion/py/__pycache__/
+Programacion/py/__pycache__
