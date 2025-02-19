@@ -217,11 +217,10 @@
       <a href="{{ url_for('principal') }}" style="text-decoration: none; color: inherit;">VytalGym</a>
     </h1>
     <nav>
-      <a href="{{ url_for('pagina') }}">Actividad</a>
-      <a href="{{ url_for('fitness') }}">Fitness</a>
-      <a href="{{ url_for('precios') }}">Servicios</a>
-      <a href="{{ url_for('alimentacion') }}">Alimentación</a>
       <a href="{{ url_for('salud') }}">Salud</a>
+      <a href="{{ url_for('fitness') }}">Fitness</a>
+      <a href="{{ url_for('alimentacion') }}">Alimentación</a>
+      <a href="{{ url_for('precios') }}">Servicios</a>
       <a href="{{ url_for('contacto') }}">Contacto</a>
     </nav>
     <div class="actions">
@@ -456,3 +455,6 @@ function updateHealthChart(startTime, endTime) {
     document.addEventListener('DOMContentLoaded', function() {
     gapi.load('client:auth2', initClient);
 });
+</script>
+</body>
+</html>

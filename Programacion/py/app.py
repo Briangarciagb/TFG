@@ -140,25 +140,29 @@ def iniciar_sesion():
 def pagina():
     return render_template('Pagina.html')
 
+@app.route('/salud')
+def salud():
+    return render_template('salud.html')
+
 @app.route('/fitness')
 def fitness():
     return render_template('fitness.html')
-
-@app.route('/precios')
-def precios():
-    return render_template('Precios.html')
 
 @app.route('/alimentacion')
 def alimentacion():
     return render_template('alimentacion.html')
 
-@app.route('/configuracion')
-def configuracion():
-    return render_template('configuracion.html')
+@app.route('/precios')
+def precios():
+    return render_template('Precios.html')
 
 @app.route('/contacto')
 def contacto():
     return render_template('contacto.html')
+
+@app.route('/configuracion')
+def configuracion():
+    return render_template('configuracion.html')
 
 @app.route('/ajustes')
 def ajustes():
