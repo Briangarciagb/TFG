@@ -3,22 +3,94 @@
 <head>
   <meta charset="UTF-8">
   <title>Configurar Foto de Perfil</title>
-  <link rel="stylesheet" href="../static/css/pagina.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pagina.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* Estilos personalizados para la página de configuración de foto */
+    body {
+      background: linear-gradient(135deg, #eef2f3, #8e9eab);
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      color: #333;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #24292e;
+      color: #fff;
+      padding: 10px 20px;
+    }
+    header nav a {
+      color: #fff;
+      text-decoration: none;
+      margin-left: 1rem;
+    }
+    main {
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      animation: fadeIn 0.6s ease forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    form label {
+      font-weight: bold;
+    }
+    form input[type="file"] {
+      padding: 5px;
+    }
+    .big-btn {
+      background: #007bff;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    .big-btn:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+    .link-btn {
+      background: none;
+      border: none;
+      color: #007bff;
+      cursor: pointer;
+      text-decoration: underline;
+      font-size: 0.9rem;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
   <header>
-    <h1>Subir foto de perfil</h1>
-    <a href="{{ url_for('logout') }}">Cerrar sesión</a>
-    <a href="{{ url_for('fitness') }}">Ajustes</a>
+    <h1>Configurar Foto de Perfil</h1>
+    <nav>
+      <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+      <a href="{{ url_for('principal') }}">Inicio</a>
+    </nav>
   </header>
   <main>
     <form action="{{ url_for('subir_foto') }}" method="POST" enctype="multipart/form-data">
       <label for="foto">Elige tu foto:</label>
       <input type="file" name="foto" id="foto" required>
-      <!-- Asegúrate de tener type="submit" -->
-      <button type="submit">Subir foto</button>
+      <button type="submit" class="big-btn"><i class="fas fa-upload"></i> Subir Foto</button>
     </form>
-    <button onclick="location.href='{{ url_for('principal') }}';">Volver a la página principal</button>
+    <button class="link-btn" onclick="location.href='{{ url_for('principal') }}';">Volver a la Página Principal</button>
   </main>
 </body>
 </html>

@@ -107,6 +107,51 @@
       margin-top: 10px;
       font-weight: bold;
     }
+    .fade-in {
+      animation: fadeIn 1s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 500px;
+      border-radius: 6px;
+    }
+    .profile-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .profile-img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+    .delete-btn {
+      background: #dc3545;
+    }
+    .delete-btn:hover {
+      background: #c82333;
+    }
   </style>
 </head>
 <body>
@@ -121,27 +166,57 @@
     <a href="{{ url_for('fitness') }}"><i class="fas fa-running"></i> Fitness</a>
     <a href="{{ url_for('alimentacion') }}"><i class="fas fa-apple-alt"></i> Alimentación</a>
     <a href="{{ url_for('autorizar') }}">Conectar con Google</a>
-    
-    
   </div>
 </div>
 
 <!-- HERO BANNER -->
 <div class="hero-banner">
-  <h1>Configuración</h1>
-  <p>Gestiona la conexión con Google Fit y tus ajustes.</p>
+  <h1>Configuración de la Cuenta</h1>
+  <p>Gestiona tu conexión con Google Fit, datos de perfil y más.</p>
 </div>
 
-<!-- MAIN CONTENT -->
-<div class="main-content">
-  <!-- Configuración Google Fit -->
+<div class="content-wrapper">
+
+  <!-- Sección de Perfil -->
+  <div class="config-section fade-in">
+    <h2><i class="fas fa-user-circle"></i> Mi Perfil</h2>
+    <div class="profile-container">
+      <img src="{{ session.user.foto }}" class="profile-img" alt="foto" onclick="openModal()">
+      <form action="{{ url_for('update_name') }}" method="POST">
+        <label for="new_name"><i class="fas fa-edit"></i> Nuevo Nombre:</label>
+        <input type="text" name="new_name" id="new_name" required>
+        <button class="big-btn"><i class="fas fa-save"></i> Guardar Nombre</button>
+      </form>
+      <form action="{{ url_for('delete_profile') }}" method="POST">
+        <button class="big-btn delete-btn">
+          <i class="fas fa-trash"></i> Eliminar Perfil
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal para cambiar foto -->
+  <div id="photoModal" class="modal">
+    <div class="modal-content fade-in">
+      <h3>Cambiar Foto de Perfil</h3>
+      <form action="{{ url_for('subir_foto') }}" method="POST" enctype="multipart/form-data">
+        <label for="new_foto">Elige una nueva foto:</label>
+        <input type="file" name="foto" id="new_foto" required>
+        <button type="submit" class="big-btn">
+          <i class="fas fa-upload"></i> Subir Foto
+        </button>
+      </form>
+      <button class="big-btn" onclick="closeModal()">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- Conexión a Google Fit -->
   <div class="config-section">
     <h2><i class="fas fa-plug"></i> Conexión a Google Fit</h2>
-    <p>Pulsa el siguiente botón para conectar con la API de Google Fit.</p>
+    <p>Pulsa el siguiente botón para autorizar el acceso a Google Fit.</p>
     <button class="big-btn" onclick="window.location.href='{{ url_for('autorizar') }}'">
       <i class="fas fa-link"></i> Conectar con Google Fit
     </button>
-      
   </div>
 
   <!-- Recargar API -->
@@ -152,6 +227,36 @@
       <i class="fas fa-sync"></i> Recargar
     </button>
     <p id="statusMessage" class="status">Estado: Esperando acción...</p>
+  </div>
+
+  <!-- Editar Foto de Perfil -->
+  <div class="config-section">
+    <h2><i class="fas fa-user-circle"></i> Editar Foto de Perfil</h2>
+    <form action="{{ url_for('subir_foto') }}" method="POST" enctype="multipart/form-data">
+      <label for="foto">Elige tu foto:</label>
+      <input type="file" name="foto" id="foto" required>
+      <button type="submit" class="big-btn">Subir foto</button>
+    </form>
+  </div>
+
+  <!-- Resetear Contraseña -->
+  <div class="config-section">
+    <h2><i class="fas fa-key"></i> Resetear Contraseña</h2>
+    <form action="{{ url_for('reset_password') }}" method="POST">
+      <label for="current_password">Contraseña Actual:</label>
+      <input type="password" name="current_password" id="current_password" required>
+      <label for="new_password">Nueva Contraseña:</label>
+      <input type="password" name="new_password" id="new_password" required>
+      <button type="submit" class="big-btn">Resetear Contraseña</button>
+    </form>
+  </div>
+
+  <!-- Cambiar Color de la Página -->
+  <div class="config-section">
+    <h2><i class="fas fa-palette"></i> Cambiar Color de la Página</h2>
+    <p>Selecciona un color para personalizar la apariencia de la página.</p>
+    <input type="color" id="colorPicker" name="colorPicker" value="#ffffff">
+    <button class="big-btn" onclick="changeColor()">Aplicar Color</button>
   </div>
 </div>
 
@@ -187,6 +292,19 @@
       });
     });
   });
+
+  function changeColor() {
+    const color = document.getElementById('colorPicker').value;
+    document.body.style.backgroundColor = color;
+  }
+
+  function openModal() {
+    /* Cambia el display a 'flex' para que se muestre y se centre el contenido */
+    document.getElementById('photoModal').style.display = 'flex';
+  }
+  function closeModal() {
+    document.getElementById('photoModal').style.display = 'none';
+  }
 </script>
 
 </body>
