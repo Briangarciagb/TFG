@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salud - VitalGym</title>
+  <!-- Enlace a la hoja de estilos general y a librerías externas -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pagina.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Librería Chart.js para representar gráficamente datos de salud -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script>
+  <!-- Librería de Google API para autenticación y uso de Google Fit -->
+  <script src="https://apis.google.com/js/api.js"></script>
+  <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+  <style>
+    /* ================= Global Styles ================= */
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(180deg, #001a33 0%, #002838 40%, #002f2f 100%);
+      color: #fff;
+      scroll-behavior: smooth;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: rgba(0, 10, 20, 0.95);
+      color: #fff;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+    }
+    header nav {
+      display: flex;
+      gap: 1.5rem;
+    }
+    header nav a {
+      text-decoration: none;
+      color: #fff;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+    header nav a:hover {
+      color: #58a058;
+    }
+    header .actions {
+      display: flex;
+      gap: 1rem;
+    }
+    header .actions button {
+      padding: 0.5rem 1rem;
+      border: none;
+      background-color: #1a1a1a;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background-color 0.3s ease;
+    }
+    header .actions button:hover {
+      background-color: #58a058;
+    }
+    header .actions button.config-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background-color: #FFB800;
+      color: black;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    header .actions button.config-btn:hover {
+      background-color: #e6a600;
+    }
+    header .actions button.config-btn img {
+      width: 16px;
+      height: 16px;
+    }
+    main {
+      margin-top: 80px;
+      padding: 20px 40px;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    /* ================= Sección Salud ================= */
+    .salud-section {
+      padding: 2rem 0;
+    }
+    .salud-section h2 {
+      text-align: center;
+      color: #58a058;
+      margin-bottom: 2rem;
+      font-size: 2.5rem;
+      text-transform: uppercase;
+    }
+    /* =========== Date Selector para datos de salud =========== */
+    .date-selector {
+      background: #fff;
+      color: #000;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .date-selector label {
+      font-weight: bold;
+    }
+    .date-selector input[type="date"] {
+      padding: 6px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    .date-selector button {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .date-selector button:hover {
+      background-color: #0056b3;
+    }
+    /* =========== Sección de Indicadores de Salud =========== */
+    .stats-section {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      color: #000;
+    }
+    .stats-section h2 {
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 2rem;
+      color: #58a058;
+    }
+    .stats-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+    }
+    .stat-card {
+      border: 1px solid #eee;
+      border-radius: 6px;
+      padding: 15px;
+      text-align: center;
+      background: #f7f9fa;
+    }
+    .stat-card div {
+      font-size: 2.2rem;
+      margin-bottom: 5px;
+      color: #007bff;
+    }
+    .stat-card p {
+      color: #666;
+    }
+    /* =========== Sección de Gráfica de Tendencias =========== */
+    .chart-section {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      color: #000;
+    }
+    .chart-section h2 {
+      margin-bottom: 15px;
+      text-align: center;
+      font-size: 2rem;
+      color: #58a058;
+    }
+    /* =========== Sección de Información y Consejos =========== */
+    .info-section {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      color: #000;
+    }
+    .info-section h2 {
+      margin-bottom: 15px;
+      text-align: center;
+      font-size: 2rem;
+      color: #58a058;
+    }
+    .info-section p {
+      text-align: justify;
+      line-height: 1.6;
+    }
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      background: rgba(0, 10, 20, 0.95);
+      color: #58a058;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>
+      <a href="{{ url_for('principal') }}" style="text-decoration: none; color: inherit;">VytalGym</a>
+    </h1>
+    <nav>
+      <a href="{{ url_for('salud') }}">Salud</a>
+      <a href="{{ url_for('fitness') }}">Fitness</a>
+      <a href="{{ url_for('alimentacion') }}">Alimentación</a>
+      <a href="{{ url_for('precios') }}">Servicios</a>
+      <a href="{{ url_for('contacto') }}">Contacto</a>
+    </nav>
+    <div class="actions">
+      {% if user %}
+        <div class="profile">
+          <img src="{{ user['picture'] }}" alt="Foto de Perfil"
+               style="width:40px; height:40px; border-radius:50%; cursor:pointer;"
+               onclick="location.href='{{ url_for('profile') }}';">
+        </div>
+        <button onclick="location.href='{{ url_for('logout') }}';">Cerrar sesión</button>
+      {% else %}
+        <button onclick="location.href='/login?mode=login';">Iniciar sesión</button>
+        <button class="config-btn" onclick="location.href='{{ url_for('configuracion') }}';">
+          <img src="../static/imagenes/gear-icon.png" alt="⚙️"> Configuración
+        </button>
+      {% endif %}
+    </div>
+  </header>
+
+  <main>
+    <!-- Sección Salud y Bienestar -->
+    <section class="salud-section">
+      <h2>Salud y Bienestar</h2>
+      <!-- Selector de Fecha para ver datos de salud -->
+      <div class="date-selector">
+        <label for="healthDate"><i class="fas fa-calendar"></i> Selecciona el día:</label>
+        <input type="date" id="healthDate" value="">
+        <button id="loadHealthData">Ver datos de salud</button>
+      </div>
+      <!-- Indicadores de Salud -->
+      <section class="stats-section">
+        <h2>Indicadores de Salud</h2>
+        <div class="stats-cards">
+          <div class="stat-card">
+            <div id="stat-sleep">0</div>
+            <p>Sueño (horas)</p>
+          </div>
+          <div class="stat-card">
+            <div id="stat-oxygen">0%</div>
+            <p>Oxígeno en Sangre</p>
+          </div>
+          <div class="stat-card">
+            <div id="stat-blood-pressure">0/0</div>
+            <p>Tensión Arterial</p>
+          </div>
+          <div class="stat-card">
+            <div id="stat-heart-rate">0</div>
+            <p>Frecuencia Cardíaca (bpm)</p>
+          </div>
+        </div>
+      </section>
+      <!-- Gráfica de Tendencias de Salud -->
+      <section class="chart-section">
+        <h2>Tendencias de Salud</h2>
+        <canvas id="healthChart" width="800" height="400"></canvas>
+      </section>
+      <!-- Sección de Consejos y Programas -->
+      <section class="info-section">
+        <h2>Consejos para Mejorar tu Salud</h2>
+        <p>Explora nuestras recomendaciones y programas diseñados para optimizar tus hábitos de sueño, la oxigenación, la presión arterial y la frecuencia cardíaca. Sigue los consejos de nuestros expertos para llevar una vida más saludable y activa.</p>
+      </section>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 VitalGym. Diseñado con pasión y dedicación.</p>
+  </footer>
+
+  <!-- Script para gestionar la autenticación, obtener datos reales de Google Fit y renderizar la gráfica -->
+  <script>
+    // Configuración de las credenciales y parámetros para Google Fit API
+    const CLIENT_ID = '305857586617-8dvrrnd94hr3io74k311lg3610176ua0.apps.googleusercontent.com';
+    const API_KEY = ''; // Reemplazar con tu API Key real
+    const DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/fitness/v1/rest"];
+    const SCOPES = "https://www.googleapis.com/auth/fitness.activity.read https://www.googleapis.com/auth/fitness.body.read https://www.googleapis.com/auth/fitness.sleep.read";
+
+    // Inicializa el cliente de Google API
+    function initClient() {
+      gapi.client.init({
+        apiKey: API_KEY,
+        clientId: CLIENT_ID,
+        discoveryDocs: DISCOVERY_DOCS,
+        scope: SCOPES
+      }).then(function () {
+        // Escucha los cambios en el estado de autenticación
+        gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
+        // Comprueba el estado inicial de autenticación
+        updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+      }, function(error) {
+        console.error("Error initializing gapi client", error);
+      });
+    }
+
+    function handleError(error) {
+    console.error('Error:', error);
+    // Mostrar mensaje al usuario
+    alert('Hubo un error al cargar los datos: ' + error.message);
+}
+
+    // Actualiza la interfaz según si el usuario está autenticado
+    function updateSigninStatus(isSignedIn) {
+      if (isSignedIn) {
+        loadHealthData();
+      } else {
+        gapi.auth2.getAuthInstance().signIn();
+      }
+    }
+
+    if (!gapi) {
+    console.error('Google API no está cargada');
+    return;
+}
+
+function loadHealthData() {
+    const today = new Date();
+    const startTime = new Date(today.setHours(0, 0, 0, 0)).getTime();
+    const endTime = new Date(today.setHours(23, 59, 59, 999)).getTime();
+
+    try {
+        // Obtener datos de sueño
+        gapi.client.fitness.users.dataSources.datasets.get({
+            userId: 'me',
+            dataSourceId: 'derived:com.google.sleep.segment:com.google.android.gms:merged',
+            datasetId: `${startTime * 1000000}-${endTime * 1000000}`
+        }).then(response => {
+            const sleepData = response.result.point || [];
+            const totalSleepMinutes = sleepData.reduce((total, point) => {
+                return total + (parseInt(point.endTimeNanos) - parseInt(point.startTimeNanos)) / (1000000000 * 60);
+            }, 0);
+            const sleepHours = (totalSleepMinutes / 60).toFixed(1);
+            document.getElementById('stat-sleep').textContent = sleepHours;
+        });
+
+        // Obtener datos de oxígeno en sangre
+        gapi.client.fitness.users.dataSources.datasets.get({
+            userId: 'me',
+            dataSourceId: 'derived:com.google.oxygen_saturation:com.google.android.gms:merged',
+            datasetId: `${startTime * 1000000}-${endTime * 1000000}`
+        }).then(response => {
+            const oxygenData = response.result.point || [];
+            if (oxygenData.length > 0) {
+                const lastReading = oxygenData[oxygenData.length - 1];
+                const oxygenLevel = lastReading.value[0].fpVal.toFixed(0);
+                document.getElementById('stat-oxygen').textContent = `${oxygenLevel}%`;
+            }
+        });
+
+        // Obtener datos de frecuencia cardíaca
+        gapi.client.fitness.users.dataSources.datasets.get({
+            userId: 'me',
+            dataSourceId: 'derived:com.google.heart_rate.bpm:com.google.android.gms:merge_heart_rate_bpm',
+            datasetId: `${startTime * 1000000}-${endTime * 1000000}`
+        }).then(response => {
+            const heartRateData = response.result.point || [];
+            if (heartRateData.length > 0) {
+                const lastReading = heartRateData[heartRateData.length - 1];
+                const heartRate = lastReading.value[0].fpVal.toFixed(0);
+                document.getElementById('stat-heart-rate').textContent = heartRate;
+            }
+        });
+
+        // Obtener datos de presión arterial
+        gapi.client.fitness.users.dataSources.datasets.get({
+            userId: 'me',
+            dataSourceId: 'derived:com.google.blood_pressure:com.google.android.gms:merged',
+            datasetId: `${startTime * 1000000}-${endTime * 1000000}`
+        }).then(response => {
+            const bpData = response.result.point || [];
+            if (bpData.length > 0) {
+                const lastReading = bpData[bpData.length - 1];
+                const systolic = lastReading.value[0].fpVal.toFixed(0);
+                const diastolic = lastReading.value[1].fpVal.toFixed(0);
+                document.getElementById('stat-blood-pressure').textContent = `${systolic}/${diastolic}`;
+            }
+        });
+
+        // Actualizar la gráfica con los datos históricos
+        updateHealthChart(startTime, endTime);
+
+    } catch (error) {
+        handleError(error);
+    }
+}
+
+function updateHealthChart(startTime, endTime) {
+    const ctx = document.getElementById('healthChart').getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [], // Se llenarán con las horas del día
+            datasets: [{
+                label: 'Frecuencia Cardíaca',
+                data: [], // Se llenará con los datos de frecuencia cardíaca
+                borderColor: 'rgb(255, 99, 132)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Obtener datos históricos para la gráfica
+    gapi.client.fitness.users.dataSources.datasets.get({
+        userId: 'me',
+        dataSourceId: 'derived:com.google.heart_rate.bpm:com.google.android.gms:merge_heart_rate_bpm',
+        datasetId: `${startTime * 1000000}-${endTime * 1000000}`
+    }).then(response => {
+        const heartRateData = response.result.point || [];
+        const labels = [];
+        const data = [];
+
+        heartRateData.forEach(point => {
+            const date = new Date(parseInt(point.startTimeNanos) / 1000000);
+            labels.push(date.toLocaleTimeString());
+            data.push(point.value[0].fpVal);
+        });
+
+        chart.data.labels = labels;
+        chart.data.datasets[0].data = data;
+        chart.update();
+    });
+}
+
+
+    // Carga la librería y configura la autenticación al cargar el DOM
+    document.addEventListener('DOMContentLoaded', function() {
+    gapi.load('client:auth2', initClient);
+});
+</script>
+</body>
+</html>

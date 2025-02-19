@@ -1,9 +1,13 @@
 import os
+import firebase_admin
+from firebase_admin import db as rtdb
+
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from flask import session, url_for, redirect, request
 
+# Definimos los alcances que necesitamos
 SCOPES = [
     'https://www.googleapis.com/auth/fitness.activity.read',
     'https://www.googleapis.com/auth/fitness.sleep.read',
@@ -14,24 +18,33 @@ SCOPES = [
     'openid'
 ]
 
-# Ruta absoluta al archivo credentials.json
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))  # Ruta base
-CREDENTIALS_PATH = os.path.join(BASE_DIR, '../claves seguras/credentials.json')
+# Ruta absoluta al archivo google_oauth_credentials.json
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+CREDENTIALS_PATH = os.path.join(BASE_DIR, 'claves seguras', 'google_oauth_credentials.json')
+
+# Asegurarnos de tener referencia a la Realtime Database
+if firebase_admin._apps:
+    database = rtdb.reference("/")
+else:
+    database = None
 
 def get_credentials():
+    """
+    Devuelve las credenciales (token) de Google guardadas en la sesión
+    """
     creds = None
-    if 'credentials' in session:  # Busca credenciales almacenadas en la sesión
+    if 'credentials' in session:  # Busca credenciales en la sesión
         creds = Credentials(**session['credentials'])
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             try:
-                creds.refresh(Request())  # Intenta refrescar el token
+                creds.refresh(Request())
             except Exception:
-                del session['credentials']  # Elimina credenciales no válidas
+                del session['credentials']
                 return None
         else:
             return None
-        session['credentials'] = creds_to_dict(creds)  # Guarda credenciales en la sesión
+        session['credentials'] = creds_to_dict(creds)
     return creds
 
 def creds_to_dict(creds):
@@ -45,33 +58,85 @@ def creds_to_dict(creds):
     }
 
 def autorizar():
+    """
+    Redirige al usuario a la pantalla de consentimiento de Google
+    """
     flow = InstalledAppFlow.from_client_secrets_file(CREDENTIALS_PATH, SCOPES)
     flow.redirect_uri = url_for('callback', _external=True)
-    authorization_url, state = flow.authorization_url(access_type='offline', include_granted_scopes='true')
+    authorization_url, state = flow.authorization_url(
+        access_type='offline',
+        include_granted_scopes='true'
+    )
     session['state'] = state
     return redirect(authorization_url)
 
 def oauth2callback():
-    # Recupera el parámetro 'state' almacenado en la sesión
+    """
+    Recibe la respuesta de Google, intercambia el 'code' por el token
+    y registra/actualiza al usuario en Realtime Database.
+    """
     state = session.get('state')
     if not state:
-        return "Error: No se encontró el parámetro state en la sesión.", 400
+        return "Error: No se encontró el parámetro 'state' en la sesión.", 400
 
-    # Crea el flujo, pasando el state recuperado
     flow = InstalledAppFlow.from_client_secrets_file(CREDENTIALS_PATH, SCOPES, state=state)
-    # Establece el redirect_uri, que debe coincidir exactamente con el registrado en Google Cloud Console
     flow.redirect_uri = url_for('callback', _external=True)
-    
+
     try:
-        # Intercambia el código de autorización por un token
         flow.fetch_token(authorization_response=request.url)
     except Exception as e:
-        # Si ocurre un error, se imprime en la consola y se devuelve un mensaje de error
         print("Error al obtener el token:", e)
         return "Error al obtener el token de Google: " + str(e), 400
 
-    # Almacena las credenciales en la sesión para usarlas posteriormente
-    session['credentials'] = creds_to_dict(flow.credentials)  # <- AQUÍ ESTABA EL ERROR
-    
-    # Redirige a la página de perfil, donde se mostrarán los datos del usuario
-    return redirect(url_for('profile'))
+    # Almacena las credenciales en la sesión
+    creds = flow.credentials
+    session['credentials'] = creds_to_dict(creds)
+
+    # Obtener info del usuario (ID Token)
+    from google.oauth2 import id_token
+    from google.auth.transport import requests as g_requests
+
+    try:
+        user_info = id_token.verify_oauth2_token(
+            creds.id_token,
+            g_requests.Request(),
+            creds.client_id
+        )
+    except ValueError as e:
+        return f"Error al verificar el ID Token: {str(e)}", 400
+
+    # user_info tiene campos como 'email', 'name', 'picture', 'sub'
+    email = user_info.get("email")
+    nombre = user_info.get("name", "")
+    foto = user_info.get("picture", "")
+
+    # Registramos o actualizamos en Realtime Database
+    if database is not None and email:
+        email_key = email.replace('.', '_')
+        usuario_ref = database.child("usuarios").child(email_key)
+        usuario_data = usuario_ref.get()
+
+        if not usuario_data:
+            # Si no existe, lo creamos
+            usuario_ref.set({
+                "nombre": nombre,
+                "email": email,
+                "foto": foto,
+                "creado_via": "google_oauth"
+            })
+        else:
+            # Si existe, actualizamos info
+            usuario_ref.update({
+                "nombre": nombre,
+                "foto": foto
+            })
+
+    # Guardamos la info del usuario en la sesión
+    session["user"] = {
+        "nombre": nombre,
+        "email": email,
+        "foto": foto
+    }
+
+    # Cambiado: Redirige a la página principal para mostrar la foto correctamente
+    return redirect(url_for('main.principal'))

@@ -448,10 +448,10 @@ body {
 <header>
   <h1><a href="{{ url_for('principal') }}" style="text-decoration: none; color: inherit;">VytalGym</a></h1>
   <nav>
-    <a href="{{ url_for('pagina') }}">Actividad</a>
+    <a href="{{ url_for('salud') }}">Salud</a>
     <a href="{{ url_for('fitness') }}">Fitness</a>
-    <a href="{{ url_for('precios') }}">Servicios</a>
     <a href="{{ url_for('alimentacion') }}">Alimentación</a>
+    <a href="{{ url_for('precios') }}">Servicios</a>
     <a href="{{ url_for('contacto') }}">Contacto</a>
   </nav>
   <div class="actions">
@@ -500,7 +500,7 @@ body {
       <div class="recipe-card">
         <img src="https://picsum.photos/600/400?random=500" alt="Receta 1">
         <div>
-          <h3>Ensalada Completa</h3>
+          <h3>Ensalada</h3>
           <p>Hojas verdes, pollo a la plancha y frutos secos. Perfecta para un almuerzo ligero.</p>
         </div>
       </div>
@@ -583,6 +583,4 @@ function loadCalendarEvents() {
 
 // Llamar a la función cuando se carga la página
 document.addEventListener('DOMContentLoaded', loadCalendarEvents);
-
-
 </script>

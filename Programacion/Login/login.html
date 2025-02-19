@@ -3,58 +3,81 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Iconos de Font Awesome -->
     <script src="https://kit.fontawesome.com/64d58efce2.js" crossorigin="anonymous"></script>
+    <!-- CSS de tu proyecto -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/loginstyle.css') }}">
 
-    <title>Inicio de sesión y registrarse</title>
+    <title>Inicio de sesión y registro</title>
   </head>
   <body>
     <div class="wrapper">
       <div class="container">
         <div class="forms-container">
           <div class="signin-signup">
-            <form action="#" class="sign-in-form">
+
+            <!-- FORMULARIO DE INICIO DE SESIÓN -->
+            <form action="{{ url_for('iniciar_sesion') }}" method="POST" class="sign-in-form">
               <h2 class="title">Iniciar Sesión</h2>
               <div class="input-field">
                 <i class="fas fa-user"></i>
-                <input type="text" placeholder="Usuario" />
+                <!-- Ajustamos el placeholder a "Email" y agregamos name="email" -->
+                <input type="email" placeholder="Email" name="email" required />
               </div>
               <div class="input-field">
                 <i class="fas fa-lock"></i>
-                <input type="password" placeholder="Contraseña" />
+                <!-- Agregamos name="password" -->
+                <input type="password" placeholder="Contraseña" name="password" required />
               </div>
               <input type="submit" value="Iniciar Sesión" class="btn solid" />
               <p class="social-text">O inicia sesión con tu cuenta de Google</p>
               <div class="social-media">
+                <!-- Enlace para Google OAuth -->
                 <a href="{{ url_for('autorizar') }}" class="social-icon">
-                  <img src="{{ url_for('static', filename='imagenes/google.png') }}" alt="Google Logo" class="social-img" />
+                  <img
+                    src="{{ url_for('static', filename='imagenes/google.png') }}"
+                    alt="Google Logo"
+                    class="social-img"
+                  />
                 </a>
-              </div>                   
+              </div>
             </form>
-            <form action="#" class="sign-up-form">
+
+            <!-- FORMULARIO DE REGISTRO -->
+            <form action="{{ url_for('registrar_usuario') }}" method="POST" class="sign-up-form">
               <h2 class="title">Registrarse</h2>
               <div class="input-field">
                 <i class="fas fa-user"></i>
-                <input type="text" placeholder="Usuario" />
+                <!-- name="nombre" para que Flask reciba el campo de nombre -->
+                <input type="text" placeholder="Nombre" name="nombre" required />
               </div>
               <div class="input-field">
                 <i class="fas fa-envelope"></i>
-                <input type="email" placeholder="Email" />
+                <!-- name="email" -->
+                <input type="email" placeholder="Email" name="email" required />
               </div>
               <div class="input-field">
                 <i class="fas fa-lock"></i>
-                <input type="password" placeholder="Contraseña" />
+                <!-- name="password" -->
+                <input type="password" placeholder="Contraseña" name="password" required />
               </div>
               <input type="submit" class="btn" value="Registrarse" />
               <p class="social-text">O regístrate con tu cuenta de Google</p>
               <div class="social-media">
+                <!-- Mismo enlace para Google OAuth -->
                 <a href="{{ url_for('autorizar') }}" class="social-icon">
-                  <img src="{{ url_for('static', filename='imagenes/google.png') }}" alt="Google Logo" class="social-img" />
+                  <img
+                    src="{{ url_for('static', filename='imagenes/google.png') }}"
+                    alt="Google Logo"
+                    class="social-img"
+                  />
                 </a>
-              </div>                      
+              </div>
             </form>
           </div>
         </div>
+
+        <!-- Paneles laterales (animación CSS/JS) -->
         <div class="panels-container">
           <div class="panel left-panel">
             <div class="content">
@@ -77,6 +100,8 @@
         </div>
       </div>
     </div>
+
+    <!-- JS con la lógica para alternar entre forms -->
     <script src="{{ url_for('static', filename='js/loginscript.js') }}"></script>
   </body>
 </html>
