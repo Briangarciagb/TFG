@@ -37,7 +37,8 @@
   <section class="hero">
     <div class="content">
       <!-- Modificamos el título para incluir el nombre del usuario -->
-      <h1>Bienvenido a nuestra página {% if session.user %}{{ session.user.nombre }}{% else %}Invitado{% endif %}</h1>
+      <h1>Bienvenido a nuestra página </h1>
+      <h1>{% if session.user %}{{ session.user.nombre }}{% else %}Invitado{% endif %}</h1>
       <p>Metabolic Exercise and Nutrition</p>
       <button>Ver Actividad</button>
     </div>
