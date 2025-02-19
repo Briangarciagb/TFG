@@ -38,8 +38,8 @@ if not firebase_admin._apps:
         })
         database = rtdb.reference("/")
         test_value = database.get()
-        print("🔥 Realtime Database inicializado correctamente.")
-        print("Valor obtenido en la raíz de la BD:", test_value)
+        # print("🔥 Realtime Database inicializado correctamente.")
+        # print("Valor obtenido en la raíz de la BD:", test_value)
     except Exception as e:
         print("⚠️ Error al inicializar Firebase:", e)
         database = None
@@ -169,7 +169,7 @@ def ajustes():
 def configurar_foto():
     return render_template('configurar_foto.html')
 
-# API: Agregar evento al calendario (POST)
+# API: Agregar evento al calendario (POST) 
 @app.route('/agregar_evento', methods=['POST'])
 def evento():
     return agregar_evento()
@@ -184,6 +184,7 @@ def callback():
     return oauth2callback()
 
 # Ruta para subir foto de perfil (POST)
+
 @app.route('/subir_foto', methods=['POST'])
 def subir_foto():
     print(">>> Ruta /subir_foto llamada")
@@ -227,6 +228,23 @@ def subir_foto():
     session["user"]["foto"] = nueva_url
     return redirect(url_for('principal'))
 
+# Ruta para resetear la contraseña (POST)
+@app.route('/reset_password', methods=['POST'])
+def reset_password():
+    if "user" not in session:
+        return redirect(url_for('login'))
+    data = request.form
+    current_password = data.get('current_password')
+    new_password = data.get('new_password')
+    email_key = session["user"]["email"].replace('.', '_')
+    usuario_ref = database.child("usuarios").child(email_key)
+    usuario_data = usuario_ref.get()
+    if not usuario_data or not bcrypt.check_password_hash(usuario_data["password"], current_password):
+        return "❌ Contraseña actual incorrecta.", 401
+    hashed_password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+    usuario_ref.update({"password": hashed_password})
+    return redirect(url_for('configuracion'))
+
 # --------------------------------------------------------------------
 # Funciones para iniciar el servidor en segundo plano (opcional)
 # --------------------------------------------------------------------
@@ -234,11 +252,11 @@ server_thread = None
 
 def iniciar_servidor_en_segundo_plano():
     global server_thread
-    if server_thread and server_thread.is_alive():
+    if (server_thread and server_thread.is_alive()):
         print("⚠️ El servidor Flask ya está corriendo.\n")
         return
     print("\n🚀🔥 ¡El servidor Flask se está iniciando en segundo plano! 🔥🚀")
-    server_thread = threading.Thread(target=lambda: app.run(debug=True, use_reloader=False), daemon=True)
+    server_thread = threading.Thread(target=lambda: app.run(debug=False, use_reloader=False), daemon=True)
     server_thread.start()
     time.sleep(2)
     print("   Accede a http://127.0.0.1:5000/ para ver la aplicación.\n")
@@ -257,20 +275,6 @@ def submenu_servidor():
             sys.exit(0)
 
 def mostrar_banner():
-    banner = r"""
- <!-- ************************************************************************* -->
-<!-- * __  __           __             ___    ____                           * -->
-<!-- */\ \/\ \         /\ \__         /\_ \  /\  _`\                         * -->
-<!-- *\ \ \ \ \  __  __\ \ ,_\    __  \//\ \ \ \ \L\_\  __  __    ___ ___    * -->
-<!-- * \ \ \ \/\ \/\ \\ \ \/  /'__`\  \ \ \ \ \ \L_L /\ \/\ \ /' __` __`\  * -->
-<!-- *  \ \ \_/ \ \ \_\ \\ \ \_/\ \L\.\_ \_\ \_\ \ \/, \ \ \_\ \/\ \/\ \/\ \ * -->
-<!-- *   \ `\___/\/`____ \\ \__\ \__/.\_\/\____\\ \____/\/`____ \ \_\ \_\ \_\* -->
-<!-- *    `\/__/  `/___/> \\/__/\/__/\/_/\/____/ \/___/  `/___/> \/_/\/_/\/_/* -->
-<!-- *               /\___/                                 /\___/           * -->
-<!-- *               \/__/                                  \/__/            * -->
-<!-- ************************************************************************* -->
-    """
-    print(banner)
     print("Bienvenido al asistente de configuración de VytalGym\nHecho por Brian y Pablo\n")
 
 def iniciar_firebase():
@@ -332,4 +336,4 @@ if __name__ == "__main__":
     if "--menu" in sys.argv:
         iniciar_asistente()
     else:
-        app.run(debug=True)
+        app.run(debug=False)

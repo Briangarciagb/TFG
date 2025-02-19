@@ -409,3 +409,98 @@ body {
     height: 100px;
     border-radius: 50%;
   }
+
+  .login-btn {
+    background-color: #FF5722;
+    color: #fff;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  
+  .login-btn:hover {
+    background-color: #E64A19;
+    transform: scale(1.08);
+  }
+  
+  /* Ajuste para .big-btn, usada en configuracion.html */
+  .big-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #007bff;
+    color: #fff;
+    padding: 12px 18px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s, transform 0.3s;
+  }
+  
+  .big-btn:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+  }
+
+  /* Animación de aparición */
+  .fade-in {
+    animation: fadeIn 0.6s ease forwards;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* Sección perfil dentro de .config-section */
+  .profile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  .profile-container .profile-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  
+  /* Botón para eliminar perfil */
+  .delete-btn {
+    background-color: #dc3545;
+  }
+  .delete-btn:hover {
+    background-color: #c82333;
+    transform: scale(1.05);
+  }
+  
+  /* Estilos para el modal */
+  .modal {
+    display: none; 
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-content {
+    background-color: #fff;
+    color: #000;
+    margin: auto;
+    padding: 2rem;
+    border-radius: 8px;
+    max-width: 400px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.3);
+    position: relative;
+  }
+  .modal-content h3 {
+    margin-top: 0;
+  }
